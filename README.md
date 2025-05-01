@@ -24,8 +24,9 @@ El sistema se integra como una extensión del navegador o aplicación complement
 - Plataformas que quieren reducir la desinformación
 
 ## Fuentes de datos y métodos de IA
+
 ### Datos:
-- FakeNewsNet Dataset
+- [FakeNewsNet Dataset](https://github.com/KaiDMML/FakeNewsNet)
 - Noticias verificadas por fact-checkers (Snopes, PolitiFact)
 
 ### Técnicas:
