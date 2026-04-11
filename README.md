@@ -1,50 +1,78 @@
-# mi-proyecto-ia
-Proyecto del curso Building AI
+# 🚀 LifeOS - AI Automation & Sales Tool (Local-First)
 
-# IA para detectar noticias falsas en redes sociales
-Proyecto de curso de desarrollo de IA – Building AI
+Una aplicación web progresiva (**PWA**) de alto rendimiento, diseñada para **consultores de IA** y expertos en **GoHighLevel (GHL)**.  
+Funciona **100% en local** para garantizar la máxima privacidad de los datos.
 
-## Resumen
-Este proyecto propone una solución basada en inteligencia artificial para detectar noticias falsas compartidas en redes sociales, ayudando a los usuarios a identificar contenido potencialmente engañoso antes de compartirlo.
+---
 
-## Antecedentes
-Las noticias falsas son un problema creciente en la era digital, especialmente en plataformas como Facebook, Twitter o WhatsApp. Este tipo de contenido puede tener consecuencias sociales, políticas y de salud muy negativas. Mi motivación personal surge del deseo de contribuir a una red más segura y consciente, donde los usuarios puedan tomar decisiones informadas antes de difundir información.
+## ✨ ¿Qué es LifeOS?
 
-### Problemas abordados:
-- Desinformación en redes sociales
-- Difusión viral de contenido falso
-- Dificultad de verificar la veracidad rápidamente
+**LifeOS** es un sistema operativo personal para productividad, ventas y automatización, creado con enfoque **Local-First**:
 
-## ¿Cómo se utiliza?
-El sistema se integra como una extensión del navegador o aplicación complementaria. Cuando el usuario selecciona un texto o enlace, el modelo analiza automáticamente el contenido y devuelve una probabilidad de veracidad. Si el contenido parece falso o poco confiable, se muestra una advertencia.
+- Sin dependencias de nube para operar.
+- Sin APIs externas obligatorias.
+- Todo el flujo de trabajo (tareas, CRM, recursos y ROI) vive en tu propio dispositivo.
 
-### Usuarios:
-- Personas que consumen y comparten noticias
-- Educadores y periodistas
-- Plataformas que quieren reducir la desinformación
+---
 
-## Fuentes de datos y métodos de IA
+## 🧩 Características Principales
 
-### Datos:
-- [FakeNewsNet Dataset](https://github.com/KaiDMML/FakeNewsNet)
-- Noticias verificadas por fact-checkers (Snopes, PolitiFact)
+- 🧠 **Dashboard Inteligente**: Vista diaria con parser de lenguaje natural para crear tareas rápidamente.
+- 📈 **Calculador de ROI**: Herramienta táctica para proyecciones económicas y cierre de ventas en vivo.
+- 🤝 **CRM de Dropservicing**: Gestión de leads y estados de prospección sin nube.
+- 📚 **Biblioteca de Recursos**: Almacén de prompts maestros y scripts de venta con función **Click-to-Copy**.
 
-### Técnicas:
-- Clasificación de texto con modelos de lenguaje (TF-IDF, BERT)
-- Redes neuronales recurrentes (RNN, LSTM) para análisis secuencial
-- Procesamiento de lenguaje natural (NLP)
+---
 
-## Desafíos
-- No puede garantizar la veracidad al 100%
-- Posibles sesgos en los datos de entrenamiento
-- Privacidad de los usuarios al analizar contenido en tiempo real
+## 🛠️ Tecnologías
 
-## ¿Qué sigue?
-- Añadir capacidad multilingüe (español, inglés, portugués)
-- Integrar el modelo en aplicaciones móviles
-- Colaborar con organizaciones de verificación profesional
+- **HTML5**
+- **CSS3** (OLED Dark Mode)
+- **Vanilla JavaScript**
+- **IndexedDB**
+- **Service Workers (PWA)**
 
-## Agradecimientos
-- Inspirado en proyectos de código abierto como FakeNewsNet
-- Dataset original por Kai Shu, Suhang Wang y Huan Liu
-- Licencia de datos y código respetada conforme a uso académico y educativo
+---
+
+## 🔐 Privacidad (Privacy-First)
+
+> **Tus datos nunca abandonan tu dispositivo.**
+
+LifeOS está diseñado bajo principios **privacy-first** y **local-first**:
+
+- Persistencia local con `localStorage` e `IndexedDB`.
+- Sin envío automático de datos a servidores externos.
+- Sin telemetría obligatoria.
+- Control total del usuario sobre exportación/importación de backups.
+
+Esto permite operar cumpliendo con los más altos estándares prácticos de privacidad para uso personal y profesional.
+
+---
+
+## 📲 Instalación rápida en móvil (GitHub Pages)
+
+1. Sube este repositorio a GitHub.
+2. Activa **GitHub Pages** desde:
+   - `Settings` → `Pages` → Source: `Deploy from a branch`.
+   - Selecciona la rama principal y carpeta `/root`.
+3. Abre la URL pública de GitHub Pages en tu móvil.
+4. Desde el navegador:
+   - **iOS (Safari):** Compartir → **Añadir a pantalla de inicio**.
+   - **Android (Chrome):** Menú → **Instalar app** / **Añadir a pantalla de inicio**.
+
+✅ Listo: tendrás LifeOS como app instalable tipo PWA.
+
+---
+
+## 🧠 Enfoque de uso recomendado
+
+- Usa el **Dashboard** para operar tu día a día.
+- Usa el **Calculador ROI** en reuniones para justificar inversión con números.
+- Guarda tus mejores prompts y guiones en **Recursos** para acelerar ventas.
+- Mantén control total con backups JSON y bloqueo local por PIN.
+
+---
+
+## 📄 Licencia
+
+Puedes adaptar esta base para uso personal o comercial según la licencia que definas en este repositorio.
