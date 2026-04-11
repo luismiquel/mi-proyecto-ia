@@ -1,0 +1,1159 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#000000" />
+  <title>LifeOS Local-First</title>
+  <style>
+    :root {
+      --bg: #000000;
+      --surface: #0a0a0f;
+      --surface-2: #11111a;
+      --text: #f3f5ff;
+      --muted: #9ea5c7;
+      --border: #1f2240;
+      --accent: #4f6bff;
+      --accent-2: #7f39fb;
+      --ok: #22c55e;
+      --warn: #f97316;
+      --danger: #ef4444;
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", Roboto, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #0c0d1c, #000 48%);
+      color: var(--text);
+      min-height: 100dvh;
+    }
+
+    .app {
+      max-width: 900px;
+      margin: 0 auto;
+      min-height: 100dvh;
+      padding: 14px 14px 92px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(22, 24, 42, .92), rgba(12, 12, 20, .95));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px;
+    }
+
+    .row { display: flex; gap: 8px; align-items: center; }
+    .row.wrap { flex-wrap: wrap; }
+    .between { justify-content: space-between; }
+
+    h1, h2, h3, p { margin: 0; }
+    h1 { font-size: 1.1rem; }
+    h2 { font-size: 1rem; }
+    small, .muted { color: var(--muted); }
+
+    .hidden { display: none !important; }
+
+    input, select, textarea, button {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--surface-2);
+      color: var(--text);
+      padding: 10px;
+      font: inherit;
+    }
+
+    textarea { min-height: 110px; resize: vertical; }
+    button { background: linear-gradient(135deg, var(--accent), var(--accent-2)); border: none; font-weight: 700; }
+    .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); }
+    .btn-primary:active { transform: scale(0.98); }
+    .btn-soft { background: var(--surface-2); border: 1px solid var(--border); }
+    .btn-danger { background: linear-gradient(135deg, #b91c1c, #ef4444); }
+
+    .section { display: grid; gap: 12px; }
+
+    .progress-wrap {
+      width: 88px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: conic-gradient(var(--accent) 0deg, #1b1f3a 0deg);
+      padding: 5px;
+    }
+    .progress-inner {
+      width: 100%; height: 100%; border-radius: 50%;
+      background: #07070d; display: grid; place-items: center;
+      font-weight: 700;
+    }
+
+    .pill { border: 1px solid var(--border); border-radius: 999px; padding: 4px 8px; font-size: .78rem; }
+    .urgent { color: #ff7e7e; }
+    .important { color: #ffd166; }
+    .routine { color: #8de3ff; }
+
+    .list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+    .item {
+      border: 1px solid var(--border);
+      background: rgba(15, 17, 28, .8);
+      border-radius: 12px;
+      padding: 10px;
+      display: grid;
+      gap: 6px;
+    }
+    .item-title { font-weight: 650; }
+    .meta { font-size: .8rem; color: var(--muted); display: flex; gap: 6px; flex-wrap: wrap; }
+    .resource-card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      padding: 10px;
+      display: grid;
+      gap: 6px;
+    }
+    .resource-body {
+      white-space: pre-wrap;
+      color: #d9def6;
+      font-size: .86rem;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px;
+      background: #121212;
+      max-height: 160px;
+      overflow: auto;
+    }
+    .copy-btn {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      width: auto;
+      padding: 8px 10px;
+      font-size: .82rem;
+    }
+    .toast {
+      position: fixed;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-10px);
+      background: #111827;
+      color: #fff;
+      border: 1px solid #2a3a66;
+      border-radius: 999px;
+      padding: 8px 14px;
+      opacity: 0;
+      pointer-events: none;
+      transition: .18s ease;
+      z-index: 200;
+      font-size: .82rem;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .roi-result {
+      background: #1a1a1a;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity .25s ease, transform .25s ease;
+    }
+    .roi-result.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .roi-present-toggle {
+      width: auto;
+      font-size: .8rem;
+      padding: 6px 8px;
+    }
+    #roiExitPresentation {
+      position: fixed;
+      right: 16px;
+      bottom: calc(74px + env(safe-area-inset-bottom));
+      width: auto;
+      z-index: 180;
+      box-shadow: 0 6px 20px rgba(0,0,0,.4);
+    }
+    body.roi-presentation .roi-form { display: none !important; }
+    body.roi-presentation #roi-result-container {
+      position: fixed;
+      inset: 16px;
+      z-index: 170;
+      margin: 0;
+      display: grid;
+      align-content: center;
+      justify-items: center;
+      text-align: center;
+      background: #0b0b12;
+    }
+    body.roi-presentation #roiAnnualValue {
+      font-size: clamp(2rem, 8vw, 3rem);
+      color: #4ade80;
+      line-height: 1.1;
+    }
+
+    .grid-2 { display: grid; gap: 8px; grid-template-columns: 1fr 1fr; }
+
+    .swipe {
+      touch-action: pan-y;
+      transition: transform .2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .swipe.done { opacity: .65; }
+    .swipe::after {
+      content: "Desliza → comprado";
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center end;
+      padding-right: 14px;
+      color: var(--ok);
+      opacity: .5;
+      pointer-events: none;
+      font-size: .75rem;
+    }
+
+    .tabbar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(4, 5, 12, .95);
+      border-top: 1px solid var(--border);
+      padding: 8px max(10px, env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 6px;
+    }
+    .tab {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--muted);
+      padding: 8px 4px;
+      font-size: .72rem;
+      border-radius: 10px;
+    }
+    .tab.active { color: #fff; border-color: var(--border); background: #111427; }
+
+    .lock-screen {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      z-index: 100;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+    }
+    .lock-card { width: min(420px, 100%); }
+
+    footer { text-align: center; color: var(--muted); font-size: .75rem; padding: 4px 0; }
+
+    @media (min-width: 780px) {
+      .grid-main { display: grid; grid-template-columns: 1.1fr .9fr; gap: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <section id="lockScreen" class="lock-screen hidden">
+    <article class="card lock-card">
+      <h2>🔒 App bloqueada</h2>
+      <p class="muted" style="margin:6px 0 10px;">Introduce tu PIN local para continuar.</p>
+      <input id="unlockPin" type="password" inputmode="numeric" maxlength="8" placeholder="PIN" />
+      <div class="row" style="margin-top:8px;">
+        <button id="unlockBtn">Desbloquear</button>
+      </div>
+      <small id="unlockMsg" class="muted"></small>
+    </article>
+  </section>
+
+  <main class="app">
+    <section class="card row between">
+      <div>
+        <h1>LifeOS · Local-First</h1>
+        <small id="dateLabel"></small>
+      </div>
+      <span class="pill">OLED • Offline • Privado</span>
+    </section>
+
+    <section id="tab-dashboard" class="section tab-panel">
+      <article class="card row between">
+        <div>
+          <h2>Hoy</h2>
+          <small id="todaySummary">Sin tareas por ahora</small>
+        </div>
+        <div class="progress-wrap" id="progressWrap"><div class="progress-inner" id="progressText">0%</div></div>
+      </article>
+      <article class="card">
+        <h3>Agenda del día</h3>
+        <ul id="todayList" class="list" style="margin-top:8px;"></ul>
+      </article>
+    </section>
+
+    <section id="tab-tareas" class="section tab-panel hidden">
+      <article class="card">
+        <h2>Nueva tarea / cita</h2>
+        <form id="taskForm" class="section" style="margin-top:8px;">
+          <input id="taskInput" placeholder="Ej: Cita dentista lunes 10:00" maxlength="150" required />
+          <div class="grid-2">
+            <input id="taskDate" type="date" required />
+            <input id="taskTime" type="time" required />
+          </div>
+          <div class="grid-2">
+            <select id="taskPriority">
+              <option value="Urgente">Urgente</option>
+              <option value="Importante" selected>Importante</option>
+              <option value="Rutina">Rutina</option>
+            </select>
+            <select id="taskCategory">
+              <option value="Médico">Médico</option>
+              <option value="Trabajo">Trabajo</option>
+              <option value="Personal" selected>Personal</option>
+            </select>
+          </div>
+          <button type="submit">Guardar</button>
+        </form>
+      </article>
+      <article class="card">
+        <h3>Próximas</h3>
+        <ul id="taskList" class="list" style="margin-top:8px;"></ul>
+      </article>
+    </section>
+
+    <section id="tab-compras" class="section tab-panel hidden">
+      <article class="card">
+        <h2>Lista de compras dinámica</h2>
+        <form id="shopForm" class="section" style="margin-top:8px;">
+          <input id="shopInput" placeholder="Añadir artículo" maxlength="100" required />
+          <select id="shopCategory">
+            <option value="Supermercado">Supermercado</option>
+            <option value="Farmacia">Farmacia</option>
+            <option value="Hogar">Hogar</option>
+            <option value="Otros">Otros</option>
+          </select>
+          <button type="submit">Añadir</button>
+        </form>
+      </article>
+      <article class="card">
+        <h3>Items agrupados</h3>
+        <div id="shopGroups" class="section" style="margin-top:8px;"></div>
+      </article>
+    </section>
+
+    <section id="tab-notas" class="section tab-panel hidden">
+      <article class="card">
+        <h2>CRM Dropservicing</h2>
+        <form id="crmForm" class="section" style="margin-top:8px;">
+          <input id="crmName" placeholder="Nombre del contacto" required />
+          <div class="grid-2">
+            <input id="crmService" placeholder="Servicio" required />
+            <select id="crmStatus">
+              <option>Prospecto</option>
+              <option>Contactado</option>
+              <option>Cerrado</option>
+            </select>
+          </div>
+          <button type="submit">Agregar contacto</button>
+        </form>
+        <ul id="crmList" class="list" style="margin-top:8px;"></ul>
+      </article>
+
+      <article class="card">
+        <h2>Notas rápidas + notas largas (IndexedDB)</h2>
+        <textarea id="quickNotes" placeholder="Notas efímeras..."></textarea>
+        <div class="row" style="margin-top:8px;">
+          <button id="saveLongNote" type="button">Guardar nota larga en IndexedDB</button>
+        </div>
+        <textarea id="longNote" placeholder="Nota larga / adjunto de texto..."></textarea>
+      </article>
+
+      <article class="card">
+        <h2>Recursos de Poder</h2>
+        <form id="resourceForm" class="section" style="margin-top:8px;">
+          <input id="resourceTitle" placeholder="Título del recurso" required maxlength="120" />
+          <input id="resourceDesc" placeholder="Descripción corta" required maxlength="180" />
+          <select id="resourceCategory">
+            <option value="Prompts de IA">Prompts de IA</option>
+            <option value="Scripts de Venta">Scripts de Venta</option>
+          </select>
+          <textarea id="resourceBody" placeholder="Cuerpo del texto..." required></textarea>
+          <button type="submit">Guardar recurso</button>
+          <input id="resourceEditId" type="hidden" />
+        </form>
+        <div id="resourcesRoot" class="section" style="margin-top:8px;"></div>
+      </article>
+    </section>
+
+    <section id="tab-ajustes" class="section tab-panel hidden">
+      <article class="card">
+        <h2>Ajustes de seguridad</h2>
+        <div class="section" style="margin-top:8px;">
+          <input id="pinInput" type="password" inputmode="numeric" maxlength="8" placeholder="Configurar PIN (vacío para quitar)" />
+          <button id="savePin" type="button">Guardar PIN</button>
+          <button id="lockNow" type="button" class="btn-soft">Bloquear ahora</button>
+        </div>
+      </article>
+
+      <article class="card">
+        <h2>Backup local</h2>
+        <div class="row wrap" style="margin-top:8px;">
+          <button id="exportBtn" type="button">Exportar JSON</button>
+          <button id="importBtn" type="button" class="btn-soft">Importar JSON</button>
+          <input id="importFile" type="file" accept="application/json" class="hidden" />
+        </div>
+      </article>
+
+      <article class="card">
+        <h2>PWA</h2>
+        <p class="muted">Manifest y Service Worker se generan localmente desde este archivo.</p>
+      </article>
+    </section>
+
+    <section id="tab-roi" class="section tab-panel hidden">
+      <article class="card">
+        <h2>Calculador ROI</h2>
+        <form id="roiForm" class="section roi-form" style="margin-top:8px;">
+          <input id="roiCostoImplementacion" type="number" min="0" step="0.01" placeholder="Costo de la Implementación ($)" required />
+          <input id="roiHorasAhorradas" type="number" min="0" step="0.01" placeholder="Horas mensuales ahorradas al cliente" required />
+          <input id="roiValorHora" type="number" min="0" step="0.01" placeholder="Valor de la hora del cliente ($)" required />
+          <input id="roiLeadsRecuperados" type="number" min="0" step="1" placeholder="Leads recuperados por mes (estimado)" required />
+          <input id="roiValorVenta" type="number" min="0" step="0.01" placeholder="Valor promedio de cada venta ($)" required />
+          <button class="btn-primary" type="submit">Calcular Impacto Económico</button>
+        </form>
+      </article>
+      <article class="roi-result" id="roi-result-container">
+        <div class="row between" style="width:100%;">
+          <strong>Resultado ROI</strong>
+          <button class="btn-soft roi-present-toggle" type="button" id="roiPresentationBtn" title="Modo presentación">👀</button>
+        </div>
+        <small id="roiAnnualLabel">Retorno Anual (Neto)</small>
+        <h3 id="roiAnnualValue">$0</h3>
+        <p id="roiResultText">Este sistema le ahorra $0 al año</p>
+        <p class="muted" id="roiBreakdown"></p>
+      </article>
+      <button id="roiExitPresentation" type="button" class="btn-primary hidden">Volver a editar</button>
+    </section>
+
+    <footer>Datos 100% privados - Almacenados en este dispositivo</footer>
+  </main>
+
+  <nav class="tabbar" id="tabbar">
+    <button class="tab active" data-tab="dashboard">Dashboard</button>
+    <button class="tab" data-tab="tareas">Tareas</button>
+    <button class="tab" data-tab="compras">Compras</button>
+    <button class="tab" data-tab="notas">Notas</button>
+    <button class="tab" data-tab="ajustes">Ajustes</button>
+    <button class="tab" data-tab="roi">Calculador ROI</button>
+  </nav>
+  <div id="copyToast" class="toast">¡Copiado!</div>
+
+  <script>
+    // ---------- Estado global (localStorage) ----------
+    const DB_KEY = 'life_os_local_first_v2';
+    const defaultState = {
+      tasks: [],
+      shopping: [],
+      crm: [],
+      resources: [
+        {
+          id: 'seed-ghl-consultor-senior',
+          category: 'Prompts de IA',
+          title: 'Consultor Senior GHL & Workflow Architect',
+          description: 'Prompt técnico para diseñar workflows completos en GoHighLevel.',
+          body: `Actúa como un Consultor Senior experto en GoHighLevel (GHL) con 10 años de experiencia en arquitectura de automatización. Mi objetivo es diseñar un workflow para [Describir nicho, ej: una clínica estética].
+
+Necesito que diseñes la lógica completa del sistema incluyendo:
+
+Triggers: ¿Qué eventos disparan la automatización?
+
+Filtros de Calificación: ¿Qué preguntas debe hacer la IA para separar leads curiosos de clientes reales?
+
+Secuencia de Seguimiento: Diseña una cadencia de SMS/Emails que no parezca spam.
+
+Manejo de Objeciones: Cómo debe reaccionar el sistema si el cliente dice 'es muy caro' o 'no tengo tiempo'.
+
+Snapshot Checklist: Qué elementos técnicos (custom fields, tags, pipelines) debo crear en GHL para que esto funcione.
+
+Responde de forma técnica, estructurada y lista para implementar.`
+        },
+        {
+          id: 'seed-script-venta-discovery',
+          category: 'Scripts de Venta',
+          title: 'Script de Venta IA + GHL (Discovery Call)',
+          description: 'Guion de llamada para calificar, presentar ROI y cerrar siguiente paso.',
+          body: `Actúa como un Sales Closer consultivo para servicios de IA + GoHighLevel.
+
+Objetivo: convertir una llamada de diagnóstico en una propuesta clara con siguiente acción cerrada.
+
+Estructura:
+1) Diagnóstico (5-8 min): contexto, volumen de leads, tiempos de respuesta, tasa de cierre actual.
+2) Dolor económico: cuantifica horas perdidas, fugas de leads y coste de oportunidad mensual.
+3) Visión futura: describe el flujo automatizado ideal (captación, seguimiento, reactivación, cierre).
+4) Oferta: implementación + soporte, entregables, plazos y métricas esperadas.
+5) Cierre: confirma siguiente paso con fecha/hora y responsable.
+
+Manejo de objeciones:
+- “Es caro” → compara inversión vs coste mensual de inacción con números concretos.
+- “No tengo tiempo” → propone onboarding asistido y despliegue en fases.
+- “Lo pensaré” → define criterio de decisión y agenda un follow-up con compromiso.
+
+Salida esperada: plan accionable de 30 días + CTA para avanzar.`
+        }
+      ],
+      quickNotes: '',
+      settings: { pin: '' },
+      notifications: { granted: false },
+      roi: {
+        costoImplementacion: '',
+        horasAhorradas: '',
+        valorHora: '',
+        leadsRecuperados: '',
+        valorVenta: '',
+        ahorroMensual: 0,
+        retornoAnual: 0
+      }
+    };
+    let state = structuredClone(defaultState);
+
+    function saveData() {
+      try {
+        localStorage.setItem(DB_KEY, JSON.stringify(state));
+        return true;
+      } catch (error) {
+        console.error('saveData error:', error);
+        return false;
+      }
+    }
+
+    function loadData() {
+      try {
+        const raw = localStorage.getItem(DB_KEY);
+        if (!raw) {
+          state = structuredClone(defaultState);
+          return state;
+        }
+        const parsed = JSON.parse(raw);
+        state = {
+          ...structuredClone(defaultState),
+          ...parsed,
+          settings: { ...defaultState.settings, ...(parsed.settings || {}) },
+          notifications: { ...defaultState.notifications, ...(parsed.notifications || {}) },
+          roi: { ...defaultState.roi, ...(parsed.roi || {}) }
+        };
+        ['tasks', 'shopping', 'crm', 'resources'].forEach((k) => {
+          if (!Array.isArray(state[k])) state[k] = [];
+        });
+        ['seed-ghl-consultor-senior', 'seed-script-venta-discovery'].forEach((seedId) => {
+          if (!state.resources.some((r) => r.id === seedId)) {
+            const seed = defaultState.resources.find((r) => r.id === seedId);
+            if (seed) state.resources.unshift(seed);
+          }
+        });
+        if (typeof state.quickNotes !== 'string') state.quickNotes = '';
+        if (typeof state.roi !== 'object' || !state.roi) state.roi = structuredClone(defaultState.roi);
+        return state;
+      } catch (error) {
+        console.error('loadData error:', error);
+        state = structuredClone(defaultState);
+        return state;
+      }
+    }
+
+    // ---------- IndexedDB (notas largas / adjuntos texto) ----------
+    const IDB_NAME = 'lifeos_assets';
+    const IDB_STORE = 'notes';
+
+    function openDB() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open(IDB_NAME, 1);
+        request.onupgradeneeded = () => request.result.createObjectStore(IDB_STORE, { keyPath: 'id' });
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    async function saveLongNote(text) {
+      const db = await openDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(IDB_STORE, 'readwrite');
+        tx.objectStore(IDB_STORE).put({ id: 'primary-long-note', text, updatedAt: Date.now() });
+        tx.oncomplete = () => resolve(true);
+        tx.onerror = () => reject(tx.error);
+      });
+    }
+
+    async function loadLongNote() {
+      const db = await openDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(IDB_STORE, 'readonly');
+        const req = tx.objectStore(IDB_STORE).get('primary-long-note');
+        req.onsuccess = () => resolve(req.result?.text || '');
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    const $ = (id) => document.getElementById(id);
+    const esc = (v) => String(v).replace(/[&<>"']/g, (m) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
+
+    function nowLabel() {
+      $('dateLabel').textContent = new Date().toLocaleString('es-ES', {
+        weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit'
+      });
+    }
+
+    function taskPriorityClass(level) {
+      if (level === 'Urgente') return 'urgent';
+      if (level === 'Rutina') return 'routine';
+      return 'important';
+    }
+
+    function toDateTime(task) {
+      return new Date(`${task.date}T${task.time || '00:00'}`);
+    }
+
+    function isToday(dateStr) {
+      const d = new Date(dateStr + 'T00:00');
+      const n = new Date();
+      return d.getFullYear() === n.getFullYear() && d.getMonth() === n.getMonth() && d.getDate() === n.getDate();
+    }
+
+    // ---------- NLP parser local ----------
+    function parseNaturalInput(text) {
+      const value = text.toLowerCase();
+      const weekdays = ['domingo','lunes','martes','miércoles','miercoles','jueves','viernes','sábado','sabado'];
+      const timeMatch = value.match(/(\d{1,2})(?::(\d{2}))?/);
+      let parsedTime = null;
+      if (timeMatch) {
+        const hh = Math.min(23, Number(timeMatch[1]));
+        const mm = Math.min(59, Number(timeMatch[2] || 0));
+        parsedTime = `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`;
+      }
+
+      let date = new Date();
+      if (value.includes('mañana')) date.setDate(date.getDate() + 1);
+      if (value.includes('hoy')) date = new Date();
+
+      const found = weekdays.find((d) => value.includes(d));
+      if (found) {
+        const map = { domingo:0, lunes:1, martes:2, miércoles:3, miercoles:3, jueves:4, viernes:5, sábado:6, sabado:6 };
+        const target = map[found];
+        const current = date.getDay();
+        const delta = (target - current + 7) % 7 || 7;
+        date.setDate(date.getDate() + delta);
+      }
+
+      const isoDate = `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+      return { date: isoDate, time: parsedTime };
+    }
+
+    function renderTasks() {
+      const data = [...state.tasks].sort((a,b)=>toDateTime(a)-toDateTime(b));
+      $('taskList').innerHTML = data.length ? data.map(t => `
+        <li class="item">
+          <div class="row between">
+            <div>
+              <div class="item-title">${esc(t.title)}</div>
+              <div class="meta">
+                <span>${esc(t.category)}</span><span>•</span><span>${esc(t.date)} ${esc(t.time)}</span>
+              </div>
+            </div>
+            <span class="pill ${taskPriorityClass(t.priority)}">${esc(t.priority)}</span>
+          </div>
+          <div class="row">
+            <button class="btn-soft" onclick="removeTask('${t.id}')">Eliminar</button>
+          </div>
+        </li>
+      `).join('') : '<li class="item"><small>Sin eventos aún.</small></li>';
+    }
+
+    function renderToday() {
+      const today = state.tasks.filter(t => isToday(t.date));
+      const completed = today.filter(t => t.done).length;
+      const total = today.length || 1;
+      const pct = Math.round((completed / total) * 100);
+      $('progressWrap').style.background = `conic-gradient(var(--accent) ${pct*3.6}deg, #1b1f3a 0deg)`;
+      $('progressText').textContent = `${pct}%`;
+      $('todaySummary').textContent = `${today.length} evento(s) para hoy`;
+
+      $('todayList').innerHTML = today.length ? today
+        .sort((a,b)=>toDateTime(a)-toDateTime(b))
+        .map(t => `
+          <li class="item">
+            <div class="row between">
+              <div>
+                <div class="item-title">${esc(t.title)}</div>
+                <div class="meta">${esc(t.time)} · ${esc(t.category)}</div>
+              </div>
+              <label class="row" style="width:auto;">
+                <input type="checkbox" ${t.done ? 'checked' : ''} onchange="toggleTaskDone('${t.id}')" style="width:auto;" />
+                <small>Hecho</small>
+              </label>
+            </div>
+          </li>`).join('') : '<li class="item"><small>¡Todo al día! Momento de buscar nuevos clientes.</small></li>';
+    }
+
+    function groupBy(arr, key) {
+      return arr.reduce((acc, item) => {
+        const k = item[key] || 'Sin categoría';
+        if (!acc[k]) acc[k] = [];
+        acc[k].push(item);
+        return acc;
+      }, {});
+    }
+
+    function setupSwipe(li, id) {
+      let startX = 0;
+      li.addEventListener('touchstart', (e) => { startX = e.changedTouches[0].clientX; }, { passive: true });
+      li.addEventListener('touchend', (e) => {
+        const endX = e.changedTouches[0].clientX;
+        if (endX - startX > 60) toggleShop(id);
+      }, { passive: true });
+      li.addEventListener('mousedown', (e) => { startX = e.clientX; });
+      li.addEventListener('mouseup', (e) => { if (e.clientX - startX > 80) toggleShop(id); });
+    }
+
+    function renderShopping() {
+      const grouped = groupBy(state.shopping, 'category');
+      const root = $('shopGroups');
+      const keys = Object.keys(grouped);
+      if (!keys.length) {
+        root.innerHTML = '<div class="item"><small>Sin productos.</small></div>';
+        return;
+      }
+      root.innerHTML = keys.map(k => `
+        <section class="card" style="padding:8px;">
+          <div class="row between"><strong>${esc(k)}</strong><small>${grouped[k].length} items</small></div>
+          <ul class="list" id="shop-${esc(k)}" style="margin-top:8px;"></ul>
+        </section>
+      `).join('');
+
+      keys.forEach((k) => {
+        const list = document.getElementById(`shop-${k}`);
+        list.innerHTML = grouped[k].map(i => `
+          <li class="item swipe ${i.done ? 'done' : ''}" data-id="${i.id}">
+            <div class="row between">
+              <span class="${i.done ? 'muted' : ''}">${esc(i.text)}</span>
+              <button class="btn-soft" onclick="removeShop('${i.id}')">Quitar</button>
+            </div>
+          </li>
+        `).join('');
+        [...list.querySelectorAll('.swipe')].forEach((el) => setupSwipe(el, el.dataset.id));
+      });
+    }
+
+    function renderCRM() {
+      $('crmList').innerHTML = state.crm.length ? state.crm.map(c => `
+        <li class="item">
+          <div class="row between">
+            <div>
+              <div class="item-title">${esc(c.name)}</div>
+              <div class="meta">${esc(c.service)}</div>
+            </div>
+            <select onchange="changeCrmStatus('${c.id}', this.value)" style="max-width:130px;">
+              <option ${c.status==='Prospecto'?'selected':''}>Prospecto</option>
+              <option ${c.status==='Contactado'?'selected':''}>Contactado</option>
+              <option ${c.status==='Cerrado'?'selected':''}>Cerrado</option>
+            </select>
+          </div>
+        </li>
+      `).join('') : '<li class="item"><small>No hay contactos.</small></li>';
+    }
+
+    function showToast(message = '¡Copiado!') {
+      const toast = $('copyToast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      clearTimeout(showToast._timer);
+      showToast._timer = setTimeout(() => toast.classList.remove('show'), 1200);
+    }
+
+    async function copyToClipboard(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast('¡Copiado!');
+      } catch {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        ta.remove();
+        showToast('¡Copiado!');
+      }
+    }
+
+    function saveResource(resourcePayload) {
+      const payload = {
+        id: resourcePayload.id || crypto.randomUUID(),
+        category: resourcePayload.category,
+        title: resourcePayload.title.trim(),
+        description: resourcePayload.description.trim(),
+        body: resourcePayload.body.trim()
+      };
+      if (!payload.title || !payload.description || !payload.body) return false;
+      if (resourcePayload.id) {
+        state.resources = state.resources.map((r) => (r.id === payload.id ? payload : r));
+      } else {
+        state.resources.push(payload);
+      }
+      saveData();
+      renderResources();
+      return true;
+    }
+
+    function editResource(id) {
+      const item = state.resources.find((r) => r.id === id);
+      if (!item) return;
+      $('resourceEditId').value = item.id;
+      $('resourceTitle').value = item.title;
+      $('resourceDesc').value = item.description;
+      $('resourceCategory').value = item.category;
+      $('resourceBody').value = item.body;
+    }
+
+    function deleteResource(id) {
+      state.resources = state.resources.filter((r) => r.id !== id);
+      saveData();
+      renderResources();
+    }
+
+    function renderResources() {
+      const root = $('resourcesRoot');
+      const grouped = groupBy(state.resources, 'category');
+      const categories = ['Prompts de IA', 'Scripts de Venta'];
+      const hasAny = state.resources.length > 0;
+      if (!hasAny) {
+        root.innerHTML = '<div class=\"item\"><small>No hay recursos todavía.</small></div>';
+        return;
+      }
+      root.innerHTML = categories.map((cat) => {
+        const items = grouped[cat] || [];
+        return `
+          <section class=\"card\" style=\"padding:8px;\">
+            <div class=\"row between\"><strong>${esc(cat)}</strong><small>${items.length} recurso(s)</small></div>
+            <div class=\"section\" style=\"margin-top:8px;\">
+              ${items.map((r) => `
+                <article class=\"resource-card\">
+                  <div class=\"row between\">
+                    <div>
+                      <div class=\"item-title\">${esc(r.title)}</div>
+                      <small>${esc(r.description)}</small>
+                    </div>
+                    <button class=\"copy-btn\" onclick=\"copyToClipboard(decodeURIComponent('${encodeURIComponent(r.body)}'))\">📋 Copiar</button>
+                  </div>
+                  <div class=\"resource-body\">${esc(r.body)}</div>
+                  <div class=\"row\">
+                    <button class=\"btn-soft\" onclick=\"editResource('${r.id}')\">Editar</button>
+                    <button class=\"btn-soft\" onclick=\"deleteResource('${r.id}')\">Borrar</button>
+                  </div>
+                </article>
+              `).join('') || '<small class=\"muted\">Sin recursos en esta categoría.</small>'}
+            </div>
+          </section>
+        `;
+      }).join('');
+    }
+
+    function renderAll() {
+      nowLabel();
+      renderTasks();
+      renderToday();
+      renderShopping();
+      renderCRM();
+      renderResources();
+      renderROI();
+      $('quickNotes').value = state.quickNotes;
+    }
+
+    function renderROI() {
+      $('roiCostoImplementacion').value = state.roi.costoImplementacion ?? '';
+      $('roiHorasAhorradas').value = state.roi.horasAhorradas ?? '';
+      $('roiValorHora').value = state.roi.valorHora ?? '';
+      $('roiLeadsRecuperados').value = state.roi.leadsRecuperados ?? '';
+      $('roiValorVenta').value = state.roi.valorVenta ?? '';
+      const retorno = Number(state.roi.retornoAnual || 0);
+      $('roiAnnualValue').textContent = retorno.toLocaleString('es-ES', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 });
+      $('roiResultText').textContent = `Este sistema le ahorra ${retorno.toLocaleString('es-ES', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 })} al año`;
+      $('roiBreakdown').textContent = state.roi.ahorroMensual
+        ? `Ahorro mensual estimado: ${Number(state.roi.ahorroMensual).toLocaleString('es-ES', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 })}`
+        : '';
+      $('roi-result-container').classList.toggle('show', retorno !== 0 || !!state.roi.ahorroMensual);
+    }
+
+    function calculateROI() {
+      const costoImplementacion = Number($('roiCostoImplementacion').value || 0);
+      const horasAhorradas = Number($('roiHorasAhorradas').value || 0);
+      const valorHora = Number($('roiValorHora').value || 0);
+      const leadsRecuperados = Number($('roiLeadsRecuperados').value || 0);
+      const valorVenta = Number($('roiValorVenta').value || 0);
+
+      const ahorroTiempo = horasAhorradas * valorHora;
+      const ingresoRecuperado = leadsRecuperados * valorVenta * 0.10;
+      const ahorroMensual = ahorroTiempo + ingresoRecuperado;
+      const retornoAnual = (ahorroMensual * 12) - costoImplementacion;
+
+      state.roi = {
+        costoImplementacion,
+        horasAhorradas,
+        valorHora,
+        leadsRecuperados,
+        valorVenta,
+        ahorroMensual,
+        retornoAnual
+      };
+      saveData();
+      renderROI();
+      showToast('ROI actualizado');
+      return state.roi;
+    }
+
+    function toggleROIPresentation(force) {
+      const shouldEnable = typeof force === 'boolean' ? force : !document.body.classList.contains('roi-presentation');
+      document.body.classList.toggle('roi-presentation', shouldEnable);
+      $('roiExitPresentation').classList.toggle('hidden', !shouldEnable);
+      $('roiPresentationBtn').classList.toggle('hidden', shouldEnable);
+    }
+
+    // ---------- Notificaciones locales ----------
+    async function ensureNotificationPermission() {
+      if (!('Notification' in window)) return false;
+      if (Notification.permission === 'granted') return true;
+      if (Notification.permission === 'denied') return false;
+      const res = await Notification.requestPermission();
+      state.notifications.granted = res === 'granted';
+      saveData();
+      return res === 'granted';
+    }
+
+    function scheduleNotifications() {
+      if (!('Notification' in window) || Notification.permission !== 'granted') return;
+      const now = Date.now();
+      state.tasks.forEach((task) => {
+        const eventMs = toDateTime(task).getTime();
+        const notifyMs = eventMs - (15 * 60 * 1000);
+        const delay = notifyMs - now;
+        if (delay > 0 && delay < 24 * 60 * 60 * 1000) {
+          setTimeout(() => {
+            new Notification('Recordatorio médico / cita', {
+              body: `${task.title} a las ${task.time}`,
+              tag: `task-${task.id}`
+            });
+          }, delay);
+        }
+      });
+    }
+
+    // ---------- Seguridad PIN ----------
+    function checkLockOnStart() {
+      if (state.settings.pin) $('lockScreen').classList.remove('hidden');
+    }
+
+    function lockNow() { $('lockScreen').classList.remove('hidden'); }
+
+    // ---------- Backup local ----------
+    function exportJSON() {
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `lifeos-backup-${new Date().toISOString().slice(0,10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function importJSON(file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const parsed = JSON.parse(reader.result);
+          state = { ...structuredClone(defaultState), ...parsed, settings: { ...defaultState.settings, ...(parsed.settings || {}) } };
+          saveData();
+          renderAll();
+          alert('Backup importado correctamente.');
+        } catch {
+          alert('JSON inválido.');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // ---------- PWA (manifest + SW inline) ----------
+    function setupInlinePWA() {
+      const manifest = {
+        name: 'LifeOS Local-First',
+        short_name: 'LifeOS',
+        start_url: '.',
+        display: 'standalone',
+        background_color: '#000000',
+        theme_color: '#000000',
+        icons: [{ src: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect width="192" height="192" fill="black"/><text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" fill="white" font-size="72">L</text></svg>', sizes: '192x192', type: 'image/svg+xml' }]
+      };
+      const manBlob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
+      const manURL = URL.createObjectURL(manBlob);
+      const link = document.createElement('link');
+      link.rel = 'manifest';
+      link.href = manURL;
+      document.head.appendChild(link);
+
+      if ('serviceWorker' in navigator) {
+        const swCode = `
+          const CACHE = 'lifeos-cache-v1';
+          self.addEventListener('install', e => {
+            e.waitUntil(caches.open(CACHE).then(c => c.addAll(['./'])));
+          });
+          self.addEventListener('fetch', e => {
+            e.respondWith(caches.match(e.request).then(r => r || fetch(e.request).catch(() => caches.match('./'))));
+          });
+        `;
+        const swBlob = new Blob([swCode], { type: 'text/javascript' });
+        const swUrl = URL.createObjectURL(swBlob);
+        navigator.serviceWorker.register(swUrl).catch(() => {});
+      }
+    }
+
+    // ---------- CRUD ----------
+    function removeTask(id) { state.tasks = state.tasks.filter(t => t.id !== id); saveData(); renderAll(); }
+    function toggleTaskDone(id) { state.tasks = state.tasks.map(t => t.id===id ? { ...t, done: !t.done } : t); saveData(); renderAll(); }
+    function toggleShop(id) { state.shopping = state.shopping.map(i => i.id===id ? { ...i, done: !i.done } : i); saveData(); renderShopping(); }
+    function removeShop(id) { state.shopping = state.shopping.filter(i => i.id !== id); saveData(); renderShopping(); }
+    function changeCrmStatus(id, status) { state.crm = state.crm.map(c => c.id===id ? { ...c, status } : c); saveData(); renderCRM(); }
+
+    window.removeTask = removeTask;
+    window.toggleTaskDone = toggleTaskDone;
+    window.toggleShop = toggleShop;
+    window.removeShop = removeShop;
+    window.changeCrmStatus = changeCrmStatus;
+    window.copyToClipboard = copyToClipboard;
+    window.editResource = editResource;
+    window.deleteResource = deleteResource;
+    window.calculateROI = calculateROI;
+    window.toggleROIPresentation = toggleROIPresentation;
+    Object.defineProperty(window, 'appState', { get: () => state });
+
+    // ---------- Eventos UI ----------
+    $('tabbar').addEventListener('click', (e) => {
+      const btn = e.target.closest('.tab');
+      if (!btn) return;
+      if (document.body.classList.contains('roi-presentation')) toggleROIPresentation(false);
+      const key = btn.dataset.tab;
+      [...document.querySelectorAll('.tab')].forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+      [...document.querySelectorAll('.tab-panel')].forEach(p => p.classList.add('hidden'));
+      $(`tab-${key}`).classList.remove('hidden');
+    });
+
+    $('taskInput').addEventListener('input', (e) => {
+      const { date, time } = parseNaturalInput(e.target.value);
+      if (date) $('taskDate').value = date;
+      if (time) $('taskTime').value = time;
+    });
+
+    $('taskForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const task = {
+        id: crypto.randomUUID(),
+        title: $('taskInput').value.trim(),
+        date: $('taskDate').value,
+        time: $('taskTime').value,
+        priority: $('taskPriority').value,
+        category: $('taskCategory').value,
+        done: false
+      };
+      if (!task.title || !task.date || !task.time) return;
+      state.tasks.push(task);
+      saveData();
+      renderAll();
+      $('taskForm').reset();
+      await ensureNotificationPermission();
+      scheduleNotifications();
+    });
+
+    $('shopForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const text = $('shopInput').value.trim();
+      if (!text) return;
+      state.shopping.push({ id: crypto.randomUUID(), text, category: $('shopCategory').value, done: false });
+      saveData();
+      renderShopping();
+      $('shopForm').reset();
+    });
+
+    $('crmForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      state.crm.push({ id: crypto.randomUUID(), name: $('crmName').value.trim(), service: $('crmService').value.trim(), status: $('crmStatus').value });
+      saveData();
+      renderCRM();
+      $('crmForm').reset();
+    });
+
+    $('quickNotes').addEventListener('input', (e) => { state.quickNotes = e.target.value; saveData(); });
+    $('saveLongNote').addEventListener('click', async () => {
+      try {
+        await saveLongNote($('longNote').value);
+        alert('Nota larga guardada en IndexedDB.');
+      } catch {
+        alert('No se pudo guardar en IndexedDB.');
+      }
+    });
+
+    $('savePin').addEventListener('click', () => {
+      state.settings.pin = $('pinInput').value.trim();
+      saveData();
+      $('pinInput').value = '';
+      alert(state.settings.pin ? 'PIN guardado.' : 'PIN eliminado.');
+    });
+    $('lockNow').addEventListener('click', lockNow);
+
+    $('unlockBtn').addEventListener('click', () => {
+      const ok = $('unlockPin').value === state.settings.pin;
+      $('unlockMsg').textContent = ok ? 'Desbloqueado.' : 'PIN incorrecto.';
+      if (ok) {
+        $('unlockPin').value = '';
+        $('lockScreen').classList.add('hidden');
+      }
+    });
+
+    $('exportBtn').addEventListener('click', exportJSON);
+    $('importBtn').addEventListener('click', () => $('importFile').click());
+    $('importFile').addEventListener('change', (e) => {
+      const file = e.target.files?.[0];
+      if (file) importJSON(file);
+      e.target.value = '';
+    });
+
+    $('resourceForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const ok = saveResource({
+        id: $('resourceEditId').value || undefined,
+        category: $('resourceCategory').value,
+        title: $('resourceTitle').value,
+        description: $('resourceDesc').value,
+        body: $('resourceBody').value
+      });
+      if (!ok) return;
+      $('resourceForm').reset();
+      $('resourceEditId').value = '';
+      showToast('Recurso guardado');
+    });
+
+    $('roiForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      calculateROI();
+    });
+    $('roiPresentationBtn').addEventListener('click', () => toggleROIPresentation(true));
+    $('roiExitPresentation').addEventListener('click', () => toggleROIPresentation(false));
+
+    // ---------- Boot ----------
+    (async function init() {
+      loadData();
+      renderAll();
+      checkLockOnStart();
+      setupInlinePWA();
+      scheduleNotifications();
+      try { $('longNote').value = await loadLongNote(); } catch {}
+      setInterval(nowLabel, 30000);
+    })();
+  </script>
+</body>
+</html>
