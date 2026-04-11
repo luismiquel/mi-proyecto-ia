@@ -1,10 +1,14 @@
+<!-- LifeOS Master -->
 <!doctype html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#000000" />
-  <title>LifeOS Local-First</title>
+  <title>LifeOS | GHL Expert Tool</title>
+  <script>
+    if (window.location.href.includes('README.md')) { window.location.href = 'index.html'; }
+  </script>
   <style>
     :root {
       --bg: #000000;
@@ -176,6 +180,8 @@
       box-shadow: 0 6px 20px rgba(0,0,0,.4);
     }
     body.roi-presentation .roi-form { display: none !important; }
+    body.roi-presentation .app > :not(#tab-roi) { display: none !important; }
+    body.roi-presentation .tabbar { display: none !important; }
     body.roi-presentation #roi-result-container {
       position: fixed;
       inset: 16px;
@@ -224,7 +230,7 @@
       border-top: 1px solid var(--border);
       padding: 8px max(10px, env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
       display: grid;
-      grid-template-columns: repeat(6, 1fr);
+      grid-template-columns: repeat(5, 1fr);
       gap: 6px;
     }
     .tab {
@@ -342,7 +348,7 @@
       </article>
     </section>
 
-    <section id="tab-notas" class="section tab-panel hidden">
+    <section id="tab-crm" class="section tab-panel hidden">
       <article class="card">
         <h2>CRM Dropservicing</h2>
         <form id="crmForm" class="section" style="margin-top:8px;">
@@ -359,18 +365,11 @@
         </form>
         <ul id="crmList" class="list" style="margin-top:8px;"></ul>
       </article>
+    </section>
 
+    <section id="tab-recursos" class="section tab-panel hidden">
       <article class="card">
-        <h2>Notas rápidas + notas largas (IndexedDB)</h2>
-        <textarea id="quickNotes" placeholder="Notas efímeras..."></textarea>
-        <div class="row" style="margin-top:8px;">
-          <button id="saveLongNote" type="button">Guardar nota larga en IndexedDB</button>
-        </div>
-        <textarea id="longNote" placeholder="Nota larga / adjunto de texto..."></textarea>
-      </article>
-
-      <article class="card">
-        <h2>Recursos de Poder</h2>
+        <h2>Biblioteca de Recursos</h2>
         <form id="resourceForm" class="section" style="margin-top:8px;">
           <input id="resourceTitle" placeholder="Título del recurso" required maxlength="120" />
           <input id="resourceDesc" placeholder="Descripción corta" required maxlength="180" />
@@ -411,6 +410,12 @@
       </article>
     </section>
 
+    <section class="hidden" aria-hidden="true">
+      <textarea id="quickNotes"></textarea>
+      <textarea id="longNote"></textarea>
+      <button id="saveLongNote" type="button">save</button>
+    </section>
+
     <section id="tab-roi" class="section tab-panel hidden">
       <article class="card">
         <h2>Calculador ROI</h2>
@@ -442,10 +447,9 @@
   <nav class="tabbar" id="tabbar">
     <button class="tab active" data-tab="dashboard">Dashboard</button>
     <button class="tab" data-tab="tareas">Tareas</button>
-    <button class="tab" data-tab="compras">Compras</button>
-    <button class="tab" data-tab="notas">Notas</button>
-    <button class="tab" data-tab="ajustes">Ajustes</button>
+    <button class="tab" data-tab="crm">CRM</button>
     <button class="tab" data-tab="roi">Calculador ROI</button>
+    <button class="tab" data-tab="recursos">Recursos</button>
   </nav>
   <div id="copyToast" class="toast">¡Copiado!</div>
 
@@ -460,29 +464,24 @@
         {
           id: 'seed-ghl-consultor-senior',
           category: 'Prompts de IA',
-          title: 'Consultor Senior GHL & Workflow Architect',
-          description: 'Prompt técnico para diseñar workflows completos en GoHighLevel.',
-          body: `Actúa como un Consultor Senior experto en GoHighLevel (GHL) con 10 años de experiencia en arquitectura de automatización. Mi objetivo es diseñar un workflow para [Describir nicho, ej: una clínica estética].
+          title: 'Auditoría de Workflows de IA',
+          description: 'Prompt experto para auditar automatizaciones y optimizar conversiones.',
+          body: `Actúa como un Arquitecto Senior en IA Automation. Necesito una auditoría completa de workflows para mi operación.
 
-Necesito que diseñes la lógica completa del sistema incluyendo:
+Incluye:
+- Mapa actual del flujo (captación, calificación, seguimiento, cierre).
+- Cuellos de botella y pérdidas de leads.
+- Riesgos de implementación y deuda técnica.
+- Priorización de mejoras por impacto/tiempo.
+- Plan de implementación en 30 días con KPIs.
 
-Triggers: ¿Qué eventos disparan la automatización?
-
-Filtros de Calificación: ¿Qué preguntas debe hacer la IA para separar leads curiosos de clientes reales?
-
-Secuencia de Seguimiento: Diseña una cadencia de SMS/Emails que no parezca spam.
-
-Manejo de Objeciones: Cómo debe reaccionar el sistema si el cliente dice 'es muy caro' o 'no tengo tiempo'.
-
-Snapshot Checklist: Qué elementos técnicos (custom fields, tags, pipelines) debo crear en GHL para que esto funcione.
-
-Responde de forma técnica, estructurada y lista para implementar.`
+Responde en formato técnico y accionable, listo para ejecutar.`
         },
         {
           id: 'seed-script-venta-discovery',
           category: 'Scripts de Venta',
-          title: 'Script de Venta IA + GHL (Discovery Call)',
-          description: 'Guion de llamada para calificar, presentar ROI y cerrar siguiente paso.',
+          title: 'Discovery Call para GHL',
+          description: 'Script comercial para diagnóstico, objeciones y cierre de siguiente paso.',
           body: `Actúa como un Sales Closer consultivo para servicios de IA + GoHighLevel.
 
 Objetivo: convertir una llamada de diagnóstico en una propuesta clara con siguiente acción cerrada.
@@ -1033,7 +1032,10 @@ Salida esperada: plan accionable de 30 días + CTA para avanzar.`
     window.deleteResource = deleteResource;
     window.calculateROI = calculateROI;
     window.toggleROIPresentation = toggleROIPresentation;
-    Object.defineProperty(window, 'appState', { get: () => appState });
+    Object.defineProperty(window, 'appState', {
+      get: () => appState,
+      set: (value) => { appState = value; }
+    });
 
     // ---------- Eventos UI ----------
     $('tabbar').addEventListener('click', (e) => {
