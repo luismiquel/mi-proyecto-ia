@@ -1,582 +1,1168 @@
-<!DOCTYPE html>
-<html lang="es" dir="ltr">
+<!-- LifeOS Master -->
+<!doctype html>
+<html lang="es">
 <head>
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Recetario EspaÃ±ol â€“ 160 recetas</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..900&display=swap" rel="stylesheet"><meta name="description" content="Recetario español con 160 recetas: aperitivos, primeros, segundos y postres. Búsqueda, lectura guiada por voz y lista de la compra.">
-<meta property="og:title" content="Recetario Español – 160 recetas">
-<meta property="og:description" content="Busca, cocina guiado por voz y genera tu lista de la compra.">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://luismiquel.github.io/mi-recetario/">
-<meta property="og:image" content="./icons/icon-512.png">
-<meta name="twitter:card" content="summary_large_image"><meta name="theme-color" content="#78350f" />
-  <link rel="manifest" href="./manifest.json" />
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#000000" />
+  <title>LifeOS | GHL Expert Tool</title>
+  <script>
+    if (window.location.href.includes('README.md')) { window.location.href = 'index.html'; }
+  </script>
   <style>
-    :root{ --base-font:16px; }
-    html{ font-size: var(--base-font); }
-    body{ -webkit-tap-highlight-color: transparent; }
-    .btn{display:inline-flex;align-items:center;justify-content:center;border-radius:1rem;padding:.6rem 1rem;font-weight:600}
-    .btn-primary{background:#92400e;color:#fff}.btn-primary:active{transform:scale(.98)}
-    .btn-ghost{background:transparent}.btn-ghost:active{transform:scale(.98)}
-    .tab{padding:.5rem .75rem;border-radius:.75rem;font-size:.9rem;font-weight:700}
-    .tab-active{background:#92400e;color:#fff}
-    .card{border-radius:1rem;border:1px solid rgba(120,113,108,.25);overflow:hidden;background:#fff}
-    .dark .card{background:#1f2937;border-color:#374151}
-    .hc *{ color:#000 !important; background:#fff !important; }
-    .hc .tab-active{ background:#000 !important; color:#fff !important; }
-    .drawer{position:fixed;top:env(safe-area-inset-top,0);right:0;bottom:0;width:380px;max-width:100%;background:#fff;color:#111;box-shadow:-4px 0 20px rgba(0,0,0,.2);transform:translateX(100%);transition:.25s;z-index:60}
-    .dark .drawer{background:#111827;color:#e5e7eb}
-    .drawer.open{transform:translateX(0)}
-    .skip-link{position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden}
-    .skip-link:focus{left:1rem;top:1rem;width:auto;height:auto;padding:.5rem .75rem;background:#fff;color:#111;border-radius:.5rem;box-shadow:0 2px 6px rgba(0,0,0,.2)}
-    #ttsCaption{position:fixed;left:0;right:0;bottom:env(safe-area-inset-bottom,0);margin:0 auto;max-width:700px;background:rgba(17,24,39,.92);color:#fff;border-radius:12px 12px 0 0;padding:.6rem .8rem;font-size:.95rem;line-height:1.35;z-index:70;display:none}
-    #ttsCaption.show{display:block}
-    @media print{header,.no-print,#shoppingDrawer,#ttsCaption{display:none!important}}
-      body {
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial,
-                   "Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji", sans-serif;
+    :root {
+      --bg: #000000;
+      --surface: #0a0a0f;
+      --surface-2: #11111a;
+      --text: #f3f5ff;
+      --muted: #9ea5c7;
+      --border: #1f2240;
+      --accent: #4f6bff;
+      --accent-2: #7f39fb;
+      --ok: #22c55e;
+      --warn: #f97316;
+      --danger: #ef4444;
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", Roboto, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #0c0d1c, #000 48%);
+      color: var(--text);
+      min-height: 100dvh;
+    }
+
+    .app {
+      max-width: 900px;
+      margin: 0 auto;
+      min-height: 100dvh;
+      padding: 14px 14px 92px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(22, 24, 42, .92), rgba(12, 12, 20, .95));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px;
+    }
+
+    .row { display: flex; gap: 8px; align-items: center; }
+    .row.wrap { flex-wrap: wrap; }
+    .between { justify-content: space-between; }
+
+    h1, h2, h3, p { margin: 0; }
+    h1 { font-size: 1.1rem; }
+    h2 { font-size: 1rem; }
+    small, .muted { color: var(--muted); }
+
+    .hidden { display: none !important; }
+
+    input, select, textarea, button {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--surface-2);
+      color: var(--text);
+      padding: 10px;
+      font: inherit;
+    }
+
+    textarea { min-height: 110px; resize: vertical; }
+    button { background: linear-gradient(135deg, var(--accent), var(--accent-2)); border: none; font-weight: 700; }
+    .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); }
+    .btn-primary:active { transform: scale(0.98); }
+    .btn-soft { background: var(--surface-2); border: 1px solid var(--border); }
+    .btn-danger { background: linear-gradient(135deg, #b91c1c, #ef4444); }
+
+    .section { display: grid; gap: 12px; }
+
+    .progress-wrap {
+      width: 88px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: conic-gradient(var(--accent) 0deg, #1b1f3a 0deg);
+      padding: 5px;
+    }
+    .progress-inner {
+      width: 100%; height: 100%; border-radius: 50%;
+      background: #07070d; display: grid; place-items: center;
+      font-weight: 700;
+    }
+
+    .pill { border: 1px solid var(--border); border-radius: 999px; padding: 4px 8px; font-size: .78rem; }
+    .urgent { color: #ff7e7e; }
+    .important { color: #ffd166; }
+    .routine { color: #8de3ff; }
+
+    .list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+    .item {
+      border: 1px solid var(--border);
+      background: rgba(15, 17, 28, .8);
+      border-radius: 12px;
+      padding: 10px;
+      display: grid;
+      gap: 6px;
+    }
+    .item-title { font-weight: 650; }
+    .meta { font-size: .8rem; color: var(--muted); display: flex; gap: 6px; flex-wrap: wrap; }
+    .resource-card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      padding: 10px;
+      display: grid;
+      gap: 6px;
+    }
+    .resource-body {
+      white-space: pre-wrap;
+      color: #d9def6;
+      font-size: .86rem;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px;
+      background: #121212;
+      max-height: 160px;
+      overflow: auto;
+    }
+    .copy-btn {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      width: auto;
+      padding: 8px 10px;
+      font-size: .82rem;
+    }
+    .toast {
+      position: fixed;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-10px);
+      background: #111827;
+      color: #fff;
+      border: 1px solid #2a3a66;
+      border-radius: 999px;
+      padding: 8px 14px;
+      opacity: 0;
+      pointer-events: none;
+      transition: .18s ease;
+      z-index: 200;
+      font-size: .82rem;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .roi-result {
+      background: #1a1a1a;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity .25s ease, transform .25s ease;
+    }
+    .roi-result.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .roi-present-toggle {
+      width: auto;
+      font-size: .8rem;
+      padding: 6px 8px;
+    }
+    #roiExitPresentation {
+      position: fixed;
+      right: 16px;
+      bottom: calc(74px + env(safe-area-inset-bottom));
+      width: auto;
+      z-index: 180;
+      box-shadow: 0 6px 20px rgba(0,0,0,.4);
+    }
+    body.roi-presentation .roi-form { display: none !important; }
+    body.roi-presentation .app > :not(#tab-roi) { display: none !important; }
+    body.roi-presentation .tabbar { display: none !important; }
+    body.roi-presentation #roi-result-container {
+      position: fixed;
+      inset: 16px;
+      z-index: 170;
+      margin: 0;
+      display: grid;
+      align-content: center;
+      justify-items: center;
+      text-align: center;
+      background: #0b0b12;
+    }
+    body.roi-presentation #roiAnnualValue {
+      font-size: clamp(2rem, 8vw, 3rem);
+      color: #4ade80;
+      line-height: 1.1;
+    }
+
+    .grid-2 { display: grid; gap: 8px; grid-template-columns: 1fr 1fr; }
+
+    .swipe {
+      touch-action: pan-y;
+      transition: transform .2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .swipe.done { opacity: .65; }
+    .swipe::after {
+      content: "Desliza → comprado";
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center end;
+      padding-right: 14px;
+      color: var(--ok);
+      opacity: .5;
+      pointer-events: none;
+      font-size: .75rem;
+    }
+
+    .tabbar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(4, 5, 12, .95);
+      border-top: 1px solid var(--border);
+      padding: 8px max(10px, env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+    }
+    .tab {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--muted);
+      padding: 8px 4px;
+      font-size: .72rem;
+      border-radius: 10px;
+    }
+    .tab.active { color: #fff; border-color: var(--border); background: #111427; }
+
+    .lock-screen {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      z-index: 100;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+    }
+    .lock-card { width: min(420px, 100%); }
+
+    footer { text-align: center; color: var(--muted); font-size: .75rem; padding: 4px 0; }
+
+    @media (min-width: 780px) {
+      .grid-main { display: grid; grid-template-columns: 1.1fr .9fr; gap: 12px; }
     }
   </style>
-<link rel="stylesheet" href="./styles.css"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"></head>
-<body class="dark:bg-stone-900 dark:text-stone-200">
-  <a href="#main" class="skip-link">Saltar al contenido principal</a>
+</head>
+<body>
+  <section id="lockScreen" class="lock-screen hidden">
+    <article class="card lock-card">
+      <h2>🔒 App bloqueada</h2>
+      <p class="muted" style="margin:6px 0 10px;">Introduce tu PIN local para continuar.</p>
+      <input id="unlockPin" type="password" inputmode="numeric" maxlength="8" placeholder="PIN" />
+      <div class="row" style="margin-top:8px;">
+        <button id="unlockBtn">Desbloquear</button>
+      </div>
+      <small id="unlockMsg" class="muted"></small>
+    </article>
+  </section>
 
-  <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4" id="app">
-    <header class="flex items-center justify-between gap-3 mb-4">
+  <main class="app">
+    <section class="card row between">
       <div>
-        <h1 class="text-2xl sm:text-3xl font-extrabold">Recetario EspaÃ±ol â€“ 160 recetas</h1>
-        <p class="text-sm text-stone-600 dark:text-stone-400">Voz clara Â· Contraste Â· Letra grande Â· Lista de compra.</p>
+        <h1>LifeOS · Local-First</h1>
+        <small id="dateLabel"></small>
       </div>
-      <div class="flex items-center gap-2">
-        <button id="toggleTheme" class="btn btn-ghost" title="Tema claro/oscuro">ðŸŒ™/â˜€ï¸</button>
-        <button id="toggleContrast" class="btn btn-ghost" title="Alto contraste">ðŸŒ“</button>
-        <button id="fontMinus" class="btn btn-ghost" title="Reducir letra">Aâˆ’</button>
-        <button id="fontPlus" class="btn btn-ghost" title="Aumentar letra">A+</button>
-        <button id="openShopping" class="btn btn-ghost" title="Lista de la compra">ðŸ§º</button>
-      </div>
-    </header>
+      <span class="pill">OLED • Offline • Privado</span>
+    </section>
 
-    <section class="card p-4 mb-4" aria-label="BÃºsqueda y filtros">
-      <div class="flex flex-col md:flex-row gap-3 items-stretch md:items-end">
-        <div class="flex-1">
-          <label for="search" class="block text-sm font-medium mb-1">Buscar</label>
-          <input id="search" type="search" inputmode="search" placeholder="Nombre, ingredienteâ€¦ (Ctrl+/)"
-                 class="w-full rounded-xl border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-900 px-3 py-2" />
+    <section id="tab-dashboard" class="section tab-panel">
+      <article class="card row between">
+        <div>
+          <h2>Hoy</h2>
+          <small id="welcomeMessage">Bienvenido a LifeOS</small>
+          <small id="todaySummary">Sin tareas por ahora</small>
         </div>
-        <div class="flex items-center gap-2 tabs" role="tablist" aria-label="CategorÃ­as">
-          <button class="tab tab-active" data-cat="Todas">Todas</button>
-          <button class="tab" data-cat="Aperitivo">Aperitivos</button>
-          <button class="tab" data-cat="Primero">Primeros</button>
-          <button class="tab" data-cat="Segundo">Segundos</button>
-          <button class="tab" data-cat="Postre">Postres</button>
-        </div>
-        <div class="flex items-end gap-2">
-          <label class="text-sm">Voz:
-            <select id="voiceRate" class="rounded-lg border px-2 py-1 dark:bg-stone-900 dark:border-stone-700">
-              <option value="0.8">Lenta</option>
-              <option value="0.9" selected>Clara</option>
-              <option value="1.0">Normal</option>
+        <div class="progress-wrap" id="progressWrap"><div class="progress-inner" id="progressText">0%</div></div>
+      </article>
+      <article class="card">
+        <h3>Agenda del día</h3>
+        <ul id="todayList" class="list" style="margin-top:8px;"></ul>
+      </article>
+    </section>
+
+    <section id="tab-tareas" class="section tab-panel hidden">
+      <article class="card">
+        <h2>Nueva tarea / cita</h2>
+        <form id="taskForm" class="section" style="margin-top:8px;">
+          <input id="taskInput" placeholder="Ej: Cita dentista lunes 10:00" maxlength="150" required />
+          <div class="grid-2">
+            <input id="taskDate" type="date" required />
+            <input id="taskTime" type="time" required />
+          </div>
+          <div class="grid-2">
+            <select id="taskPriority">
+              <option value="Urgente">Urgente</option>
+              <option value="Importante" selected>Importante</option>
+              <option value="Rutina">Rutina</option>
             </select>
-          </label>
-          <button id="toggleMic" class="btn btn-primary" title="Activar micrÃ³fono">ðŸŽ¤ Micro</button>
-        </div>
-      </div>
-      <div id="readerStatus" class="text-xs text-stone-500 mt-2" aria-live="polite"></div>
-      <div id="heard" class="text-xs mt-1 text-stone-500">ðŸŽ§ OÃ­do: <span id="heardText">â€”</span></div>
+            <select id="taskCategory">
+              <option value="Médico">Médico</option>
+              <option value="Trabajo">Trabajo</option>
+              <option value="Personal" selected>Personal</option>
+            </select>
+          </div>
+          <button type="submit">Guardar</button>
+        </form>
+      </article>
+      <article class="card">
+        <h3>Próximas</h3>
+        <ul id="taskList" class="list" style="margin-top:8px;"></ul>
+      </article>
     </section>
 
-    <section class="mb-2 text-sm text-stone-600 dark:text-stone-400">
-      <span id="countLabel">Mostrando 0 recetas.</span>
+    <section id="tab-compras" class="section tab-panel hidden">
+      <article class="card">
+        <h2>Lista de compras dinámica</h2>
+        <form id="shopForm" class="section" style="margin-top:8px;">
+          <input id="shopInput" placeholder="Añadir artículo" maxlength="100" required />
+          <select id="shopCategory">
+            <option value="Supermercado">Supermercado</option>
+            <option value="Farmacia">Farmacia</option>
+            <option value="Hogar">Hogar</option>
+            <option value="Otros">Otros</option>
+          </select>
+          <button type="submit">Añadir</button>
+        </form>
+      </article>
+      <article class="card">
+        <h3>Items agrupados</h3>
+        <div id="shopGroups" class="section" style="margin-top:8px;"></div>
+      </article>
     </section>
 
-    <main id="main">
-      <!-- 2 columnas en mÃ³vil, 3 en escritorio -->
-      <div id="recipesGrid" class="grid grid-cols-2 md:grid-cols-3 gap-4"></div>
-      <div id="emptyState" class="hidden text-center text-stone-600 dark:text-stone-400 mt-10">No hay resultados.</div>
-    </main>
-
-    <!-- Modal Detalle -->
-    <div id="detailModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 no-print" role="dialog" aria-modal="true">
-      <div class="card max-w-3xl w-full">
-        <div class="p-3 border-b border-stone-200 dark:border-stone-700 flex items-center justify-between">
-          <h3 id="detailTitle" class="text-xl font-semibold">Detalle</h3>
-          <button id="closeDetail" class="btn btn-ghost">âœ•</button>
-        </div>
-        <div class="p-4 grid gap-4 md:grid-cols-2">
-          <div>
-            <img id="detailImg" src="" alt="" class="w-full h-48 object-cover rounded-lg" loading="eager" width="800" height="500">
-            <p id="detailMeta" class="mt-2 text-sm text-stone-600 dark:text-stone-400"></p>
-            <div class="mt-3 flex flex-wrap gap-2">
-              <button id="btnReadAll" class="btn btn-ghost">ðŸ”ˆ Leer</button>
-              <button id="btnGuided" class="btn btn-primary">â–¶ï¸ Guiada</button>
-              <button id="btnAddAll" class="btn btn-ghost">ðŸ§º AÃ±adir todo</button>
-            </div>
+    <section id="tab-crm" class="section tab-panel hidden">
+      <article class="card">
+        <h2>CRM Dropservicing</h2>
+        <form id="crmForm" class="section" style="margin-top:8px;">
+          <input id="crmName" placeholder="Nombre del contacto" required />
+          <div class="grid-2">
+            <input id="crmService" placeholder="Servicio" required />
+            <select id="crmStatus">
+              <option>Prospecto</option>
+              <option>Contactado</option>
+              <option>Cerrado</option>
+            </select>
           </div>
-          <div>
-            <h4 class="text-lg font-semibold">Ingredientes</h4>
-            <ul id="detailIngredients" class="list-disc pl-6 mt-2"></ul>
-            <h4 class="text-lg font-semibold mt-4">Pasos</h4>
-            <ol id="detailSteps" class="list-decimal pl-6 mt-2"></ol>
-          </div>
-        </div>
-      </div>
-    </div>
+          <button type="submit">Agregar contacto</button>
+        </form>
+        <ul id="crmList" class="list" style="margin-top:8px;"></ul>
+      </article>
+    </section>
 
-    <!-- Modal Guiada -->
-    <div id="guidedModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 no-print" role="dialog" aria-modal="true">
-      <div class="card max-w-2xl w-full">
-        <div class="p-3 border-b border-stone-200 dark:border-stone-700 flex items-center justify-between">
-          <h3 id="guidedTitle" class="text-xl font-semibold">Cocina guiada</h3>
-          <button id="closeGuided" class="btn btn-ghost">âœ•</button>
-        </div>
-        <div class="p-4 space-y-4">
-          <p class="text-sm text-stone-600 dark:text-stone-400">Di: â€œsiguienteâ€, â€œanteriorâ€, â€œrepetirâ€, â€œleer ingredientesâ€, â€œpaso 2â€, â€œsalirâ€.</p>
-          <div class="bg-stone-50 dark:bg-stone-900 rounded-xl p-4">
-            <h4 id="guidedRecipeTitle" class="text-lg font-semibold mb-2"></h4>
-            <ol id="guidedSteps" class="list-decimal pl-5 space-y-2"></ol>
-          </div>
-          <div class="flex items-center justify-between">
-            <div class="text-xs text-stone-500" id="guidedProgress"></div>
-            <div class="flex gap-2">
-              <button id="prevStep" class="btn btn-ghost">â† Anterior</button>
-              <button id="repeatStep" class="btn btn-ghost">âŸ² Repetir</button>
-              <button id="nextStep" class="btn btn-primary">Siguiente â†’</button>
-              <button id="stopReading" class="btn btn-ghost">â–  Parar</button>
-              <button id="printRecipe" class="btn btn-ghost">ðŸ–¨ï¸ Imprimir</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <section id="tab-recursos" class="section tab-panel hidden">
+      <article class="card">
+        <h2>Biblioteca de Recursos</h2>
+        <form id="resourceForm" class="section" style="margin-top:8px;">
+          <input id="resourceTitle" placeholder="Título del recurso" required maxlength="120" />
+          <input id="resourceDesc" placeholder="Descripción corta" required maxlength="180" />
+          <select id="resourceCategory">
+            <option value="Prompts de IA">Prompts de IA</option>
+            <option value="Scripts de Venta">Scripts de Venta</option>
+          </select>
+          <textarea id="resourceBody" placeholder="Cuerpo del texto..." required></textarea>
+          <button type="submit">Guardar recurso</button>
+          <input id="resourceEditId" type="hidden" />
+        </form>
+        <div id="resourcesRoot" class="section" style="margin-top:8px;"></div>
+      </article>
+    </section>
 
-    <!-- Drawer Lista compra -->
-    <aside id="shoppingDrawer" class="drawer" aria-label="Lista de la compra">
-      <div class="p-3 border-b border-stone-200 dark:border-stone-700 flex items-center justify-between">
-        <h3 class="text-lg font-semibold">Lista de la compra</h3>
-        <div class="flex items-center gap-2">
-          <button id="exportList" class="btn btn-ghost">â¬‡ï¸ Exportar</button>
-          <button id="printList" class="btn btn-ghost">ðŸ–¨ï¸</button>
-          <button id="clearChecked" class="btn btn-ghost">ðŸ—‘ï¸ Marcados</button>
-          <button id="closeShopping" class="btn btn-ghost">âœ•</button>
+    <section id="tab-ajustes" class="section tab-panel hidden">
+      <article class="card">
+        <h2>Ajustes de seguridad</h2>
+        <div class="section" style="margin-top:8px;">
+          <input id="pinInput" type="password" inputmode="numeric" maxlength="8" placeholder="Configurar PIN (vacío para quitar)" />
+          <button id="savePin" type="button">Guardar PIN</button>
+          <button id="lockNow" type="button" class="btn-soft">Bloquear ahora</button>
         </div>
-      </div>
-      <div class="p-3">
-        <div class="flex gap-2 mb-3">
-          <input id="newItem" class="flex-1 rounded-xl border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-900 px-3 py-2" placeholder="AÃ±adir artÃ­culo (ej. 1 kg tomates)" />
-          <button id="addItem" class="btn btn-primary">AÃ±adir</button>
-        </div>
-        <ul id="shoppingList" class="space-y-2"></ul>
-        <p id="shoppingEmpty" class="text-sm text-stone-500 mt-3 hidden">Tu lista estÃ¡ vacÃ­a.</p>
-      </div>
-    </aside>
-  </div>
+      </article>
 
-  <!-- SubtÃ­tulos de voz -->
-  <div id="ttsCaption" role="status" aria-live="polite"></div>
+      <article class="card">
+        <h2>Backup local</h2>
+        <div class="row wrap" style="margin-top:8px;">
+          <button id="exportBtn" type="button">Exportar JSON</button>
+          <button id="importBtn" type="button" class="btn-soft">Importar JSON</button>
+          <input id="importFile" type="file" accept="application/json" class="hidden" />
+        </div>
+      </article>
+
+      <article class="card">
+        <h2>PWA</h2>
+        <p class="muted">Manifest y Service Worker se generan localmente desde este archivo.</p>
+      </article>
+    </section>
+
+    <section class="hidden" aria-hidden="true">
+      <textarea id="quickNotes"></textarea>
+      <textarea id="longNote"></textarea>
+      <button id="saveLongNote" type="button">save</button>
+    </section>
+
+    <section id="tab-roi" class="section tab-panel hidden">
+      <article class="card">
+        <h2>Calculador ROI</h2>
+        <form id="roiForm" class="section roi-form" style="margin-top:8px;">
+          <input id="roiCostoImplementacion" type="number" min="0" step="0.01" placeholder="Costo de la Implementación ($)" required />
+          <input id="roiHorasAhorradas" type="number" min="0" step="0.01" placeholder="Horas mensuales ahorradas al cliente" required />
+          <input id="roiValorHora" type="number" min="0" step="0.01" placeholder="Valor de la hora del cliente ($)" required />
+          <input id="roiLeadsRecuperados" type="number" min="0" step="1" placeholder="Leads recuperados por mes (estimado)" required />
+          <input id="roiValorVenta" type="number" min="0" step="0.01" placeholder="Valor promedio de cada venta ($)" required />
+          <button class="btn-primary" type="submit">Calcular Impacto Económico</button>
+        </form>
+      </article>
+      <article class="roi-result" id="roi-result-container">
+        <div class="row between" style="width:100%;">
+          <strong>Resultado ROI</strong>
+          <button class="btn-soft roi-present-toggle" type="button" id="roiPresentationBtn" title="Modo presentación">👀</button>
+        </div>
+        <small id="roiAnnualLabel">Retorno Anual (Neto)</small>
+        <h3 id="roiAnnualValue">$0</h3>
+        <p id="roiResultText">Este sistema le ahorra $0 al año</p>
+        <p class="muted" id="roiBreakdown"></p>
+      </article>
+      <button id="roiExitPresentation" type="button" class="btn-primary hidden">Volver a editar</button>
+    </section>
+
+    <footer>Datos 100% privados - Almacenados en este dispositivo</footer>
+  </main>
+
+  <nav class="tabbar" id="tabbar">
+    <button class="tab active" data-tab="dashboard">Dashboard</button>
+    <button class="tab" data-tab="tareas">Tareas</button>
+    <button class="tab" data-tab="crm">CRM</button>
+    <button class="tab" data-tab="roi">Calculador ROI</button>
+    <button class="tab" data-tab="recursos">Recursos</button>
+  </nav>
+  <div id="copyToast" class="toast">¡Copiado!</div>
 
   <script>
-  /* ===== Datos ===== */
-  const IMG = c => ({ Aperitivo:"./img/aperitivo.svg", Primero:"./img/primero.svg", Segundo:"./img/segundo.svg", Postre:"./img/postre.svg" }[c]);
-  const APERITIVOS=[ "Tostas de tomate y jamÃ³n","Tostas de anchoa y pimiento","Tostas de escalivada","Tostas de salmÃ³n y queso fresco","Croquetas de jamÃ³n","Croquetas de pollo","Croquetas de bacalao","Croquetas de setas","Empanadillas de atÃºn","Empanadillas de carne","Patatas bravas","Patatas alioli","Boquerones en vinagre","ChampiÃ±ones al ajillo","Gildas donostiarras","Pinchos de tortilla","Pinchos morunos","Queso marinado en aceite","Hummus clÃ¡sico con cruditÃ©s","Hummus de remolacha","Hummus de aguacate","Gazpacho en vasitos","Salmorejo en chupitos","Ensaladilla rusa","Tortilla francesa mini","Banderillas variadas","Mejillones en escabeche","Sardinas marinadas","Pulpo a la gallega (tapa)","Calamares a la romana","Torreznos crujientes","JamÃ³n con picos","Queso manchego con membrillo","Pimientos del padrÃ³n","Montadito de lomo","Montadito de pringÃ¡","Bonito con tomate (tapa)","Pisto con huevo (tapa)","Chistorra a la sidra","Berenjena frita con miel"];
-  const PRIMEROS=[ "Sopa de ajo","Sopa castellana","Gazpacho andaluz","Salmorejo cordobÃ©s","Ajoblanco","Crema de calabaza","Crema de puerros","Crema de champiÃ±Ã³n","Pisto manchego","Menestra de verduras","Lentejas estofadas","Garbanzos con espinacas","JudÃ­as blancas con verduras","Arroz caldoso de verduras","Arroz a la cubana","Arroz negro","Arroz al horno","Paella de verduras","FideuÃ¡ de pescado","Macarrones con tomate","Tallarines al ajillo","Espaguetis carbonara ligera","Ensalada mixta","Ensalada campera","Ensalada de garbanzos","Ensalada de pasta frÃ­a","Tomates aliÃ±ados","Papas arrugadas con mojo","Pimientos asados","Alcachofas salteadas","Acelgas rehogadas","Sopa de pescado","Caldo gallego","Cocido andaluz (sopa)","Sopa minestrone","Vichyssoise","Crema de zanahoria","Porrusalda","Sopa de marisco","Caldo de pollo casero"];
-  const SEGUNDOS=[ "Pollo al ajillo","Pollo al horno con patatas","Pollo en pepitoria","Pechuga de pollo a la plancha","Escalope de ternera","Filete de ternera a la plancha","Carrilleras al vino tinto","Rabo de toro","AlbÃ³ndigas en salsa","Lomo adobado","Costillas al horno","Chuletillas de cordero","Cordero asado","Secreto ibÃ©rico a la plancha","Solomillo al roquefort","Bacalao a la vizcaÃ­na","Bacalao al pil-pil","Merluza en salsa verde","Dorada al horno","Lubina a la sal","SalmÃ³n al papillote","AtÃºn encebollado","Calamares en su tinta","Pulpo a la gallega","Paella mixta","Arroz con pollo","Arroz con bogavante","Empanada gallega de atÃºn","Pisto con huevos","Tortilla de patatas","Revuelto de setas","Conejo al ajillo","Codornices escabechadas","Callos a la madrileÃ±a","Fabada asturiana","Marmitako de bonito","ChuletÃ³n a la plancha","Escabeche de caballa","Bonito con tomate","Trucha a la navarra"];
-  const POSTRES=[ "Flan casero","Natillas caseras","Arroz con leche","Leche frita","Torrijas","Crema catalana","Tarta de queso al horno","Tarta de Santiago","Bizcocho de yogur","Bizcocho de naranja","Magdalenas caseras","Galletas de mantequilla","Rosquillas fritas","PestiÃ±os","BuÃ±uelos de viento","Filloas","Peras al vino","Compota de manzana","Macedonia de frutas","Helado rÃ¡pido de plÃ¡tano","Mousse de chocolate","Natillas de vainilla","Tarta de manzana","Tarta tres leches (versiÃ³n)","Brazo de gitano","Quesada pasiega","Tocino de cielo","Pan de Calatrava","Cuajada con miel","Crepes dulces","Flan de cafÃ©","Crema pastelera con frutas","Tarta de almendra","Tarta de galletas con chocolate","Bizcocho marmolado","Helado de yogur","Brownie sencillo","Crema de limÃ³n","Naranja con canela","Fresas con nata"];
+    // ---------- Estado global (localStorage) ----------
+    const DB_KEY = 'life_os_local_first_v2';
+    const defaultState = {
+      tasks: [],
+      shopping: [],
+      crm: [],
+      resources: [
+        {
+          id: 'seed-ghl-consultor-senior',
+          category: 'Prompts de IA',
+          title: 'Prompt Auditoría GHL',
+          description: 'Prompt experto para auditar automatizaciones y optimizar conversiones.',
+          body: `Actúa como un Arquitecto Senior en IA Automation. Necesito una auditoría completa de workflows para mi operación.
 
-  /* Overrides realistas para platos clave (ingredientes + pasos + tiempo) */
-  const OV = (()=> {
-    function R(ing, pasos, tiempo){ return {ing, pasos, tiempo}; }
-    const CROQ_BASE = ["Leche entera","Harina de trigo","Mantequilla","Aceite de oliva","Cebolla","Nuez moscada","Sal","Pimienta","Huevos","Pan rallado"];
-    const CROQ_PASOS = [
-      "Pica fino cebolla y el relleno.",
-      "Pocha cebolla con aceite y mantequilla 6â€“8 min sin dorar.",
-      "AÃ±ade el relleno y rehoga 1â€“2 min.",
-      "Incorpora harina (90â€“100 g/L leche) y cocina 2â€“3 min.",
-      "Agrega la leche caliente poco a poco, removiendo hasta bechamel espesa y lisa.",
-      "Sazona con sal, pimienta y nuez moscada; cocina 8â€“10 min a fuego bajo.",
-      "Pasa a fuente, filma a piel y enfrÃ­a 4 h (mejor de un dÃ­a para otro).",
-      "Da forma, pasa por huevo y pan rallado.",
-      "FrÃ­e a 175â€“180 ÂºC hasta dorar; escurre."
-    ];
-    const M = new Map([
-      // Croquetas y otros clave
-      ["croquetas de jamÃ³n", R(["JamÃ³n serrano picado",...CROQ_BASE], CROQ_PASOS, "45â€“75 min + reposo")],
-      ["croquetas de pollo", R(["Pollo cocido desmigado",...CROQ_BASE], CROQ_PASOS, "45â€“75 min + reposo")],
-      ["croquetas de bacalao", R(["Bacalao desalado desmigado",...CROQ_BASE], CROQ_PASOS, "45â€“75 min + reposo")],
-      ["croquetas de setas", R(["Setas picadas",...CROQ_BASE], CROQ_PASOS, "45â€“75 min + reposo")],
-      ["patatas bravas", R(
-        ["Patatas","Aceite para freÃ­r","Sal","Ajo","PimentÃ³n dulce","PimentÃ³n picante","Tomate triturado","Vinagre"],
-        ["FrÃ­e patatas en dados hasta dorar.","SofrÃ­e ajo; aÃ±ade pimentÃ³n, tomate y sal.","Cocina 10â€“12 min y ajusta con vinagre.","Sirve patatas con salsa por encima."],
-        "30â€“40 min"
-      )],
-      ["patatas alioli", R(
-        ["Patatas cocidas","Ajo","Huevo o leche (lactonesa)","Aceite suave","LimÃ³n o vinagre","Sal","Perejil"],
-        ["Cuece patatas y enfrÃ­a.","Emulsiona ajo con huevo/leche y aceite, sal y limÃ³n.","Mezcla patata en dados con alioli y perejil."],
-        "25â€“35 min"
-      )],
-      ["calamares a la romana", R(
-        ["Calamares","Harina","Huevo","Aceite para freÃ­r","Sal","LimÃ³n"],
-        ["Seca aros de calamar y sala.","Pasa por harina y huevo batido.","FrÃ­e a 175â€“180 ÂºC 1â€“2 min; escurre.","Sirve con limÃ³n."],
-        "20â€“30 min"
-      )],
-      // Gazpachos/paellas y clÃ¡sicos
-      ["gazpacho andaluz", R(["Tomate","Pepino","Pimiento verde","Ajo","Pan","Aceite","Vinagre","Sal"],
-        ["Tritura y emulsiona con aceite.","Ajusta sal/vinagre y enfrÃ­a."],"15â€“20 min + frÃ­o")],
-      ["salmorejo cordobÃ©s", R(["Tomate","Pan","Ajo","Aceite","Vinagre","Sal","JamÃ³n","Huevo cocido"],
-        ["Tritura tomate/pan/ajo/sal.","Emulsiona con aceite y vinagre.","Sirve con jamÃ³n y huevo."],"15â€“20 min + frÃ­o")],
-      ["ajoblanco", R(["Almendra cruda","Ajo","Pan","Agua frÃ­a","Aceite","Vinagre","Sal","Uvas"],
-        ["Tritura almendra, ajo, pan, agua y sal.","Emulsiona con aceite y vinagre.","Sirve muy frÃ­o con uvas."],"15â€“20 min + frÃ­o")],
-      ["fideuÃ¡ de pescado", R(["Fideo grueso","Caldo de pescado","Sepia/calamar","Gamba","Ajo","PimentÃ³n","Tomate","Aceite","Sal","Allioli (opcional)"],
-        ["SofrÃ­e sepia y retira.","AÃ±ade ajo, pimentÃ³n y tomate.","Tuesta el fideo, moja con caldo y cocina.","Incorpora sepia/gambas al final. Sirve con allioli."],"30â€“40 min")],
-      ["paella de verduras", R(["Arroz","Caldo vegetal","JudÃ­a verde","Garrafo/garbanzo","Pimiento","Tomate","Ajo","Aceite","Sal","AzafrÃ¡n"],
-        ["SofrÃ­e verduras.","AÃ±ade arroz y nacara un minuto.","Moja con caldo caliente y azafrÃ¡n.","Cocina 18â€“20 min; reposo 5."],"35â€“45 min")],
-      ["paella mixta", R(["Arroz","Caldo","Pollo","Conejo","Gamba/Calamar","Pimiento","Tomate","Ajo","Aceite","Sal","AzafrÃ¡n"],
-        ["Dora carnes, aÃ±ade sofrito.","Agrega arroz, nacara y moja con caldo/azafrÃ¡n.","Cocina 18â€“20 min, coloca mariscos al final; reposo 5."],"40â€“55 min")],
-      ["arroz con bogavante", R(["Arroz","Bogavante","Caldo de marisco","Ajo","PimentÃ³n","Tomate","Aceite","Sal"],
-        ["Marca bogavante y reserva.","Haz sofrito con ajo/pimentÃ³n/tomate.","AÃ±ade arroz, caldo y bogavante; cocina 18 min."],"35â€“45 min")],
-      ["tortilla de patatas", R(["Patatas","Cebolla (opcional)","Huevos","Aceite","Sal"],
-        ["FrÃ­e patata en aceite suave.","Mezcla con huevo batido y sal.","Cuaja a tu gusto por ambos lados."],"25â€“35 min")],
-      ["pollo al ajillo", R(["Pollo troceado","Ajo","Aceite","Vino blanco","Sal","Pimienta","Laurel"],
-        ["Dora pollo con ajos.","Desglasa con vino; reduce.","Ajusta sal/pimienta y sirve."],"25â€“35 min")],
-      ["cordero asado", R(["Paletilla/pierna de cordero","Ajo","Romero","Aceite","Sal","Agua o vino"],
-        ["Sala cordero con ajo/romero.","Asa a 180â€“190 ÂºC 70â€“90 min, regando.","Deja reposar y sirve con jugo."],"75â€“95 min")],
-      ["fabada asturiana", R(["Fabes","Compango (chorizo, morcilla, panceta)","Cebolla","Ajo","PimentÃ³n","Sal"],
-        ["Desala si procede.","Cuece fabes con compango a fuego bajo (asustando).","Espuma y rectifica sal."],"120â€“180 min")],
-      ["marmitako de bonito", R(["Bonito","Patata","Pimiento","Cebolla","Ajo","Tomate","Caldo","Aceite","Sal"],
-        ["Haz sofrito y aÃ±ade patata.","Cubre con caldo y cocina.","Agrega bonito al final (2â€“3 min)."],"35â€“45 min")],
-      ["rabo de toro", R(["Rabo de toro","Verduras para sofrito","Vino tinto","Caldo","Aceite","Sal","Harina (ligar)"],
-        ["Dora rabo enharinado.","SofrÃ­e verduras; moja con vino y reduce.","Cuece con caldo 2â€“3 h hasta meloso."],"150â€“210 min")],
-      ["callos a la madrileÃ±a", R(["Callos limpios","Morcilla/chorizo","PimentÃ³n","Guindilla","Cebolla","Ajo","Laurel","Sal"],
-        ["Blanquea y enjuaga callos.","Guiso con sofrito y pimentÃ³n a fuego bajo hasta tiernos."],"120â€“180 min")],
-      ["bacalao al pil-pil", R(["Bacalao desalado","Ajo","Guindilla","Aceite de oliva"],
-        ["Confita ajos y bacalao a baja TÂª.","Liga el pil-pil moviendo la cazuela.","Sirve con ajos y guindilla."],"25â€“35 min")],
-      ["merluza en salsa verde", R(["Merluza","Ajo","Perejil","Vino blanco","Caldo","Aceite","Sal","Almejas (opcional)"],
-        ["Dora ajo, aÃ±ade harina ligera.","Vino+caldo, perejil y merluza 5â€“7 min.","AÃ±ade almejas hasta abrir."],"20â€“30 min")],
-      ["pulpo a la gallega", R(["Pulpo cocido","Patata cocida","Aceite","PimentÃ³n","Sal en escamas"],
-        ["Corta pulpo y patata.","AliÃ±a con aceite, pimentÃ³n y sal."],"10â€“15 min")],
-      // Postres clave
-      ["tarta de queso al horno", R(["Queso crema","Huevos","AzÃºcar","Nata","Harina (opcional)"],
-        ["Mezcla sin batir en exceso.","Hornea 180 ÂºC 40â€“50 min; centro tembloroso.","EnfrÃ­a y sirve."],"60â€“90 min con enfriado")],
-      ["flan casero", R(["Leche","Huevos","AzÃºcar","Vainilla","AzÃºcar para caramelo"],
-        ["Haz caramelo y forra molde.","Mezcla leche/huevo/azÃºcar/vainilla.","Horno al baÃ±o marÃ­a 160â€“170 ÂºC 40â€“55 min.","EnfrÃ­a y desmolda."],"70â€“120 min con frÃ­o")],
-      ["natillas caseras", R(["Leche","Yemas","AzÃºcar","Maicena","Vainilla","Canela"],
-        ["Infusiona leche con vainilla/canela.","Templa yemas con azÃºcar/maicena.","Cuece sin hervir hasta napar.","EnfrÃ­a con galleta."],"30â€“50 min + frÃ­o")],
-      ["torrijas", R(["Pan","Leche","AzÃºcar","Canela","Huevo","Aceite","AzÃºcar/canela o miel"],
-        ["Empapa pan en leche aromatizada.","Reboza en huevo y frÃ­e.","Reboza en azÃºcar/canela o miel."],"30â€“45 min")],
-      ["arroz con leche", R(["Arroz","Leche entera","AzÃºcar","Canela","LimÃ³n"],
-        ["Cuece arroz en leche aromatizada a fuego bajo, removiendo.","Azucara al final; enfrÃ­a."],"45â€“60 min")],
-      ["tarta de santiago", R(["Almendra molida","AzÃºcar","Huevos","LimÃ³n","Canela"],
-        ["Mezcla todo y hornea 180 ÂºC 25â€“35 min.","Espolvorea azÃºcar glas con cruz."],"40â€“55 min")],
-      ["brownie sencillo", R(["Chocolate","Mantequilla","AzÃºcar","Huevos","Harina","Nueces (opcional)"],
-        ["Funde choco/mantequilla.","AÃ±ade huevos y azÃºcar, luego harina.","Hornea 170â€“180 ÂºC 20â€“25 min."],"35â€“45 min")]
-    ]);
-    return { get: (title) => M.get(title.toLowerCase()) || null };
-  })();
+Incluye:
+- Mapa actual del flujo (captación, calificación, seguimiento, cierre).
+- Cuellos de botella y pérdidas de leads.
+- Riesgos de implementación y deuda técnica.
+- Priorización de mejoras por impacto/tiempo.
+- Plan de implementación en 30 días con KPIs.
 
-  const PASOS_BASE = {
-    Aperitivo:["Prepara y ten a mano todo.","Corta/dispÃ³n los ingredientes.","SofrÃ­e o mezcla hasta aromatizar.","Monta y ajusta sal/aliÃ±o.","Reposa 1â€“2 min o sirve caliente.","Emplata y sirve."],
-    Primero:["Lava y prepara verduras.","SofrÃ­e ajo/cebolla suave.","AÃ±ade ingrediente principal y rehoga.","Cubre con caldo/agua y cocina.","Ajusta textura (tritura/reposa).","Sirve caliente o frÃ­o."],
-    Segundo:["Seca la pieza y sala.","AÃ±ade adobo/especias.","Dora/hornea/sella bien.","Agrega guarniciÃ³n/salsa y cocina al punto.","Reposa unos minutos.","Sirve con su jugo."],
-    Postre:["Pesa y mide todo.","Mezcla secos y hÃºmedos aparte.","Aromatiza (cÃ­tricos/vainilla/canela).","Hornea/refrigera hasta cuajar.","EnfrÃ­a o reposa.","Decora y sirve."]
-  };
+Responde en formato técnico y accionable, listo para ejecutar.`
+        },
+        {
+          id: 'seed-script-venta-discovery',
+          category: 'Scripts de Venta',
+          title: 'Script Discovery Call',
+          description: 'Script comercial para diagnóstico, objeciones y cierre de siguiente paso.',
+          body: `Actúa como un Sales Closer consultivo para servicios de IA + GoHighLevel.
 
-  function ingredientesPara(cat,t){
-    t=t.toLowerCase(); let ing=[];
-    const ov = OV.get(t); if (ov) return ov.ing;
-    if(cat==="Aperitivo"){
-      if(/empanadill/.test(t)) ing=["Obladas","AtÃºn/carne","Cebolla","Tomate frito","Huevo","Aceite","Sal"];
-      else if(/alioli/.test(t)) ing=["Patatas","Ajo","Huevo o leche","Aceite suave","LimÃ³n/vinagre","Sal","Perejil"];
-      else if(/boquerones/.test(t)) ing=["Boquerones","Vinagre","Ajo","Perejil","Aceite","Sal"];
-      else if(/romana|calamar/.test(t)) ing=["Calamares","Harina","Huevo","Aceite","Sal","LimÃ³n"];
-      else if(/hummus/.test(t)) ing=["Garbanzos","Tahini","Ajo","LimÃ³n","Aceite","Sal","Comino"];
-      else ing=["Pan/base","Aceite de oliva","Ajo (opcional)","Sal"];
-    } else if(cat==="Primero"){
-      if(OV.get(t)) ing=OV.get(t).ing;
-      else if(/sopa|caldo/.test(t)) ing=["Caldo","Ajo/Cebolla","Aceite","Sal"];
-      else if(/crema|vichyssoise|purrusalda|zanahoria/.test(t)) ing=["Verdura principal","Cebolla/Puerro","Caldo","Aceite","Sal"];
-      else if(/arroz|paella/.test(t)) ing=["Arroz","Caldo","Verduras","Aceite","Sal","AzafrÃ¡n (opcional)"];
-      else if(/fideu/.test(t)) ing=["Fideos","Caldo de pescado","Ajo","PimentÃ³n","Tomate","Aceite","Sal"];
-      else if(/ensalada/.test(t)) ing=["Lechuga/legumbre","Tomate","Cebolla","Aceite","Vinagre","Sal"];
-    } else if(cat==="Segundo"){
-      if(OV.get(t)) ing=OV.get(t).ing;
-      else if(/pollo/.test(t)) ing=["Pollo","Ajo","Aceite","Sal","Pimienta"];
-      else if(/ternera|solomillo|chulet/.test(t)) ing=["Vacuno","Aceite","Sal","Pimienta"];
-      else if(/cordero/.test(t)) ing=["Cordero","Ajo","Romero","Aceite","Sal"];
-      else if(/secreto|lomo|costillas/.test(t)) ing=["Cerdo","Ajo","PimentÃ³n","Aceite","Sal"];
-      else if(/bacalao|merluza|dorada|lubina|trucha|bonito|atun/.test(t)) ing=["Pescado","Aceite","Ajo/Perejil","Sal"];
-      else if(/paella|arroz/.test(t)) ing=["Arroz","Caldo","Pollo/Marisco","Pimiento","Tomate","AzafrÃ¡n","Sal"];
-      else if(/tortilla|revuelto/.test(t)) ing=["Huevos","Patata/Setas","Aceite","Sal"];
-    } else {
-      if(OV.get(t)) ing=OV.get(t).ing;
-      else if(/flan/.test(t)) ing=["Leche","Huevos","AzÃºcar","Vainilla","AzÃºcar para caramelo"];
-      else if(/natilla/.test(t)) ing=["Leche","Yemas","AzÃºcar","Maicena","Vainilla"];
-      else if(/arroz con leche/.test(t)) ing=["Arroz","Leche","AzÃºcar","Canela","LimÃ³n"];
-      else if(/tarta de queso/.test(t)) ing=["Queso crema","Huevos","AzÃºcar","Nata","Harina (opcional)"];
-      else if(/bizcocho|galleta|magdalena|tarta/.test(t)) ing=["Harina","AzÃºcar","Huevos","Mantequilla/Aceite","Levadura"];
-      else if(/helado|mousse/.test(t)) ing=["Fruta/Yogur/Chocolate","AzÃºcar","Nata/Leche"];
-      else ing=["AzÃºcar","Leche/Huevos/Harina (segÃºn postre)"];
+Objetivo: convertir una llamada de diagnóstico en una propuesta clara con siguiente acción cerrada.
+
+Estructura:
+1) Diagnóstico (5-8 min): contexto, volumen de leads, tiempos de respuesta, tasa de cierre actual.
+2) Dolor económico: cuantifica horas perdidas, fugas de leads y coste de oportunidad mensual.
+3) Visión futura: describe el flujo automatizado ideal (captación, seguimiento, reactivación, cierre).
+4) Oferta: implementación + soporte, entregables, plazos y métricas esperadas.
+5) Cierre: confirma siguiente paso con fecha/hora y responsable.
+
+Manejo de objeciones:
+- “Es caro” → compara inversión vs coste mensual de inacción con números concretos.
+- “No tengo tiempo” → propone onboarding asistido y despliegue en fases.
+- “Lo pensaré” → define criterio de decisión y agenda un follow-up con compromiso.
+
+Salida esperada: plan accionable de 30 días + CTA para avanzar.`
+        }
+      ],
+      quickNotes: '',
+      settings: { pin: '' },
+      notifications: { granted: false },
+      roi: {
+        costoImplementacion: '',
+        horasAhorradas: '',
+        valorHora: '',
+        leadsRecuperados: '',
+        valorVenta: '',
+        ahorroMensual: 0,
+        retornoAnual: 0
+      }
+    };
+    let appState = structuredClone(defaultState);
+
+    function saveData() {
+      try {
+        localStorage.setItem(DB_KEY, JSON.stringify(appState));
+        return true;
+      } catch (error) {
+        console.error('saveData error:', error);
+        return false;
+      }
     }
-    return Array.from(new Set(ing));
-  }
 
-  function tiempo(cat,t){
-    const ov=OV.get(t.toLowerCase()); if(ov) return ov.tiempo;
-    t=t.toLowerCase();
-    if(cat==="Aperitivo") return /croqueta|empanad/.test(t)?"25â€“35 min":"5â€“15 min";
-    if(cat==="Primero")   return /arroz|fideu|estof|fabada|cocido|marisc/.test(t)?"30â€“50 min":"15â€“30 min";
-    if(cat==="Segundo")   return /asado|horno|costillas|carrilleras|rabo/.test(t)?"45â€“90 min":"15â€“35 min";
-    if(cat==="Postre")    return /tarta|horno|tocino|calatrava/.test(t)?"40â€“70 min":/helado|mousse|frutas/.test(t)?"10â€“20 min":"20â€“40 min";
-    return "20â€“30 min";
-  }
-
-  function pasosPara(cat,t){
-    const ov=OV.get(t.toLowerCase()); if(ov) return ov.pasos;
-    return PASOS_BASE[cat];
-  }
-
-  function build(cat,list){
-    return list.map(n=>({categoria:cat,titulo:n,imagen:IMG(cat),
-      ingredientes:ingredientesPara(cat,n), pasos:pasosPara(cat,n), tiempo:tiempo(cat,n)}));
-  }
-  const RECETAS=[...build("Aperitivo",APERITIVOS),...build("Primero",PRIMEROS),...build("Segundo",SEGUNDOS),...build("Postre",POSTRES)];
-
-  /* ===== Estado + UI ===== */
-  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-  const state={q:"",cat:"Todas",list:RECETAS,current:null,step:0,dark:matchMedia('(prefers-color-scheme: dark)').matches,contrast:false,font:16,listening:false,rate:0.9};
-  const $=id=>document.getElementById(id);
-  const els={grid:$('recipesGrid'),empty:$('emptyState'),count:$('countLabel'),search:$('search'),tabs:()=>document.querySelectorAll('.tab'),status:$('readerStatus'),
-    toggleTheme:$('toggleTheme'),toggleContrast:$('toggleContrast'),fontPlus:$('fontPlus'),fontMinus:$('fontMinus'),
-    toggleMic:$('toggleMic'),heard:$('heardText'),voiceRate:$('voiceRate'),
-    detailModal:$('detailModal'),detailTitle:$('detailTitle'),detailImg:$('detailImg'),detailMeta:$('detailMeta'),detailIngredients:$('detailIngredients'),detailSteps:$('detailSteps'),closeDetail:$('closeDetail'),btnReadAll:$('btnReadAll'),btnGuided:$('btnGuided'),btnAddAll:$('btnAddAll'),
-    guidedModal:$('guidedModal'),gTitle:$('guidedTitle'),gSteps:$('guidedSteps'),gProg:$('guidedProgress'),next:$('nextStep'),prev:$('prevStep'),rep:$('repeatStep'),stop:$('stopReading'),close:$('closeGuided'),printBtn:$('printRecipe'),
-    shoppingDrawer:$('shoppingDrawer'),openShopping:$('openShopping'),closeShopping:$('closeShopping'),shoppingList:$('shoppingList'),shoppingEmpty:$('shoppingEmpty'),newItem:$('newItem'),addItem:$('addItem'),exportList:$('exportList'),printList:$('printList'),clearChecked:$('clearChecked'),
-    caption:$('ttsCaption')
-  };
-
-  function applyTheme(){ document.documentElement.classList.toggle('dark',state.dark); }
-  function applyContrast(){ document.documentElement.classList.toggle('hc',state.contrast); }
-  function setFont(px){ state.font=Math.max(14,Math.min(22,px)); document.documentElement.style.setProperty('--base-font', state.font+'px'); }
-  applyTheme(); applyContrast(); setFont(state.font);
-  els.toggleTheme.onclick=()=>{state.dark=!state.dark;applyTheme();};
-  els.toggleContrast.onclick=()=>{state.contrast=!state.contrast;applyContrast();};
-  els.fontPlus.onclick=()=>setFont(state.font+1);
-  els.fontMinus.onclick=()=>setFont(state.font-1);
-
-  function card(r,i){
-    return `<article class="card">
-      <img src="${r.imagen}" alt="Foto de ${r.titulo}" class="w-full h-44 sm:h-48 object-cover" loading="eager">
-      <div class="p-3 space-y-2">
-        <h3 class="text-lg font-semibold">${r.titulo}</h3>
-        <p class="text-sm text-stone-600 dark:text-stone-400">${r.categoria} Â· ${r.tiempo}</p>
-        <div class="flex flex-wrap gap-2 pt-1">
-          <button class="btn btn-ghost" data-a="leer" data-i="${i}">ðŸ”ˆ Leer</button>
-          <button class="btn btn-primary" data-a="guiada" data-i="${i}">â–¶ï¸ Guiada</button>
-          <button class="btn btn-ghost" data-a="abrir" data-i="${i}">ðŸ“– Abrir</button>
-          <button class="btn btn-ghost" data-a="lista" data-i="${i}">ðŸ§º AÃ±adir</button>
-        </div>
-      </div>
-    </article>`;
-  }
-  function render(list){ state.list=list; if(!list.length){ els.grid.innerHTML=""; els.empty.classList.remove('hidden'); els.count.textContent="Mostrando 0 recetas."; return; } els.empty.classList.add('hidden'); els.grid.innerHTML=list.map((r,i)=>card(r,i)).join(""); els.count.textContent=`Mostrando ${list.length} recetas.`; }
-  function filter(){ const q=state.q.toLowerCase().trim(); const l=RECETAS.filter(r=>(state.cat==="Todas"||r.categoria===state.cat)&&(!q||[r.titulo,...r.ingredientes,...r.pasos].join(" ").toLowerCase().includes(q))); render(l); }
-  render(RECETAS);
-  els.tabs().forEach(b=>b.onclick=()=>{ els.tabs().forEach(x=>x.classList.remove('tab-active')); b.classList.add('tab-active'); state.cat=b.dataset.cat; filter(); });
-  els.search.oninput=e=>{ state.q=e.target.value; filter(); };
-  document.addEventListener('keydown',e=>{ if(e.ctrlKey&&e.key==='/'){ e.preventDefault(); els.search.focus(); } });
-
-  function openDetail(r){ state.current=r; els.detailTitle.textContent=r.titulo; els.detailImg.src=r.imagen; els.detailImg.alt=`Foto de ${r.titulo}`; els.detailMeta.textContent=`${r.categoria} Â· ${r.tiempo}`; els.detailIngredients.innerHTML=r.ingredientes.map(i=>`<li>${i}</li>`).join(""); els.detailSteps.innerHTML=r.pasos.map(p=>`<li>${p}</li>`).join(""); els.detailModal.classList.remove('hidden'); els.detailModal.classList.add('flex'); }
-  function closeDetail(){ els.detailModal.classList.add('hidden'); els.detailModal.classList.remove('flex'); }
-  $('closeDetail').onclick=closeDetail;
-  document.getElementById('detailModal').addEventListener('click',e=>{ if(e.target.id==='detailModal') closeDetail(); });
-
-  /* ===== Voz robusta ===== */
-  let ttsVoice=null, voicesReady=false;
-  function pickVoice(){
-    const vs=speechSynthesis.getVoices();
-    voicesReady = vs && vs.length>0;
-    ttsVoice = vs.find(v=>/Spanish.*(Spain)|es[-_]ES/i.test(v.name+v.lang))
-             || vs.find(v=>/Spanish|es[-_]/i.test(v.name+v.lang))
-             || vs[0] || null;
-  }
-  if('speechSynthesis'in window){ try{pickVoice(); speechSynthesis.onvoiceschanged=pickVoice;}catch{} }
-  els.voiceRate.onchange=(e)=>{ state.rate = Number(e.target.value)||0.9; };
-
-  function unlockTTSOnce(){
-    if (!('speechSynthesis' in window) || unlockTTSOnce.done) return;
-    try{ speechSynthesis.cancel(); speechSynthesis.resume(); }catch{}
-    const u=new SpeechSynthesisUtterance(''); try{ speechSynthesis.speak(u);}catch{} try{ speechSynthesis.cancel(); }catch{}
-    unlockTTSOnce.done=true;
-    document.removeEventListener('touchend', unlockTTSOnce);
-    document.removeEventListener('click', unlockTTSOnce);
-  }
-  document.addEventListener('touchend', unlockTTSOnce, {passive:true});
-  document.addEventListener('click', unlockTTSOnce, {once:true});
-
-  let speakLock=false;
-  function stopSpeak(){ try{ speechSynthesis.cancel(); }catch{} }
-  const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-  async function speakSafe(text){
-    if(!('speechSynthesis' in window)) return;
-    while(speakLock) await sleep(20);
-    speakLock=true;
-    if(!voicesReady){ try{pickVoice();}catch{} }
-    stopSpeak(); await sleep(120);
-    const u=new SpeechSynthesisUtterance(text);
-    if(ttsVoice) u.voice=ttsVoice;
-    u.lang=(ttsVoice&&ttsVoice.lang)||'es-ES';
-    u.rate=state.rate; u.pitch=1.0;
-    const cap=document.getElementById('ttsCaption');
-    if(cap){ u.onstart=()=>{ cap.textContent=text; cap.classList.add('show'); };
-             u.onend  =()=>{ cap.classList.remove('show'); cap.textContent=''; }; }
-    const done=new Promise(res=>{ u.onend=()=>{ speakLock=false; res(); }; u.onerror=()=>{ speakLock=false; res(); }; });
-    try{ speechSynthesis.speak(u); }catch{ speakLock=false; }
-    await done;
-  }
-
-  function readRecipe(r){
-    const intro=`${r.titulo}. ${r.categoria}. Tiempo ${r.tiempo}.`;
-    const ing=r.ingredientes?.length?`Ingredientes: ${r.ingredientes.join(", ")}.`:"";
-    const pasos=r.pasos?.length?`Pasos: ${r.pasos.map((p,i)=>`Paso ${i+1}: ${p}.`).join(" ")}`:"";
-    speakSafe([intro,ing,pasos].filter(Boolean).join(" "));
-    els.status.textContent=`Leyendo ${r.titulo}.`;
-  }
-
-  /* ===== Guiado + voz ===== */
-  function ensureCurrent(){
-    if(!state.current){
-      const primera=(state.list && state.list[0])||null;
-      if(!primera){ els.status.textContent="Abre una receta y pulsa â€˜Guiadaâ€™."; return false; }
-      state.current=primera; state.step=0;
+    function loadData() {
+      try {
+        const raw = localStorage.getItem(DB_KEY);
+        if (!raw) {
+          appState = structuredClone(defaultState);
+          return appState;
+        }
+        const parsed = JSON.parse(raw);
+        appState = {
+          ...structuredClone(defaultState),
+          ...parsed,
+          settings: { ...defaultState.settings, ...(parsed.settings || {}) },
+          notifications: { ...defaultState.notifications, ...(parsed.notifications || {}) },
+          roi: { ...defaultState.roi, ...(parsed.roi || {}) }
+        };
+        ['tasks', 'shopping', 'crm', 'resources'].forEach((k) => {
+          if (!Array.isArray(appState[k])) appState[k] = [];
+        });
+        ['seed-ghl-consultor-senior', 'seed-script-venta-discovery'].forEach((seedId) => {
+          if (!appState.resources.some((r) => r.id === seedId)) {
+            const seed = defaultState.resources.find((r) => r.id === seedId);
+            if (seed) appState.resources.unshift(seed);
+          }
+        });
+        if (typeof appState.quickNotes !== 'string') appState.quickNotes = '';
+        if (typeof appState.roi !== 'object' || !appState.roi) appState.roi = structuredClone(defaultState.roi);
+        return appState;
+      } catch (error) {
+        console.error('loadData error:', error);
+        appState = structuredClone(defaultState);
+        return appState;
+      }
     }
-    return true;
-  }
-  function openGuided(r){
-    state.current=r; state.step=0;
-    $('guidedRecipeTitle').textContent=r.titulo;
-    $('guidedSteps').innerHTML=r.pasos.map((p,i)=>`<li data-step="${i}">${p}</li>`).join("");
-    $('guidedModal').classList.remove('hidden'); $('guidedModal').classList.add('flex');
-    // Activa micrÃ³fono automÃ¡ticamente si hay soporte
-    if (SR) { state.listening = true; startMic(); updateMic(); }
-    speakSafe(`Iniciamos ${r.titulo}. Di siguiente, anterior, repetir o salir.`);
-    readCurrent();
-  }
-  function closeGuided(){ stopSpeak(); $('guidedModal').classList.add('hidden'); $('guidedModal').classList.remove('flex'); els.status.textContent="Cocina guiada cerrada."; }
-  function readCurrent(){
-    if(!ensureCurrent()) return;
-    const pasos=state.current.pasos||[]; if(!pasos.length) return;
-    if(state.step<0) state.step=0; if(state.step>=pasos.length) state.step=pasos.length-1;
-    speakSafe(`Paso ${state.step+1}. ${pasos[state.step]}`);
-    const t=pasos.length; $('guidedProgress').textContent=`Paso ${state.step+1} de ${t}`;
-    [...$('guidedSteps').children].forEach((li,i)=>li.classList.toggle('font-semibold', i===state.step));
-  }
-  async function nextStep(){ if(!ensureCurrent()) return; const t=(state.current.pasos||[]).length; if(state.step<t-1){ state.step++; stopSpeak(); await sleep(80); readCurrent(); } else { stopSpeak(); await sleep(80); speakSafe("Receta terminada. Â¡Buen provecho!"); } }
-  async function prevStep(){ if(!ensureCurrent()) return; if(state.step>0){ state.step--; stopSpeak(); await sleep(80); readCurrent(); } else { stopSpeak(); await sleep(80); speakSafe("Ya estÃ¡s en el primer paso."); } }
-  function repeatStep(){ stopSpeak(); setTimeout(readCurrent,80); }
-  function readIngredients(){ if(!ensureCurrent()) return; const ing=state.current?.ingredientes||[]; stopSpeak(); setTimeout(()=>speakSafe(ing.length?("Ingredientes: "+ing.join(", ")):"No hay ingredientes listados."),80); }
-  function goToStep(n){ const total=state?.current?.pasos?.length||0; if(n>=0&&n<total){ state.step=n; stopSpeak(); setTimeout(readCurrent,80); } else { stopSpeak(); setTimeout(()=>speakSafe("Ese nÃºmero de paso no existe."),80); } }
 
-  $('btnReadAll').onclick=()=>{ if(state.current) readRecipe(state.current); };
-  $('btnGuided').onclick=()=>{ if(state.current) openGuided(state.current); };
-  $('btnAddAll').onclick=()=>{ if(state.current) addMany(state.current.ingredientes||[]); };
-  $('closeDetail').onclick=closeDetail;
-  document.getElementById('detailModal').addEventListener('click',e=>{ if(e.target.id==='detailModal') closeDetail(); });
+    // ---------- IndexedDB (notas largas / adjuntos texto) ----------
+    const IDB_NAME = 'lifeos_assets';
+    const IDB_STORE = 'notes';
 
-  $('nextStep').onclick=nextStep; $('prevStep').onclick=prevStep; $('repeatStep').onclick=repeatStep; $('stopReading').onclick=()=>{ stopSpeak(); }; $('closeGuided').onclick=closeGuided;
-  $('printRecipe').onclick=()=>{ window.print(); };
+    function openDB() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open(IDB_NAME, 1);
+        request.onupgradeneeded = () => request.result.createObjectStore(IDB_STORE, { keyPath: 'id' });
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+    }
 
-  // DelegaciÃ³n en tarjetas
-  els.grid.addEventListener('click',e=>{
-    const b=e.target.closest('button[data-a]'); if(!b) return;
-    const r=state.list[Number(b.dataset.i)];
-    if(!r) return;
-    if(b.dataset.a==='leer') readRecipe(r);
-    if(b.dataset.a==='guiada') openGuided(r);
-    if(b.dataset.a==='abrir') openDetail(r);
-    if(b.dataset.a==='lista') addMany(r.ingredientes||[]);
-  });
+    async function saveLongNote(text) {
+      const db = await openDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(IDB_STORE, 'readwrite');
+        tx.objectStore(IDB_STORE).put({ id: 'primary-long-note', text, updatedAt: Date.now() });
+        tx.oncomplete = () => resolve(true);
+        tx.onerror = () => reject(tx.error);
+      });
+    }
 
-  // Atajos en modal
-  document.addEventListener('keydown',e=>{
-    if($('guidedModal').classList.contains('hidden')) return;
-    if(e.key===' '||e.key==='ArrowRight'){ e.preventDefault(); nextStep(); }
-    if(e.key==='ArrowLeft'){ e.preventDefault(); prevStep(); }
-    if(e.key==='r'||e.key==='R'){ e.preventDefault(); repeatStep(); }
-    if(e.key==='Escape'){ e.preventDefault(); closeGuided(); closeDetail(); }
-  });
+    async function loadLongNote() {
+      const db = await openDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(IDB_STORE, 'readonly');
+        const req = tx.objectStore(IDB_STORE).get('primary-long-note');
+        req.onsuccess = () => resolve(req.result?.text || '');
+        req.onerror = () => reject(req.error);
+      });
+    }
 
-  /* ===== Lista de la compra ===== */
-  const SKEY='shopping.v1'; let shopping=JSON.parse(localStorage.getItem(SKEY)||'[]');
-  function save(){ localStorage.setItem(SKEY,JSON.stringify(shopping)); }
-  function uid(){ return Math.random().toString(36).slice(2,9); }
-  function renderList(){ $('shoppingList').innerHTML=shopping.map(i=>`<li class="flex items-center gap-2"><input type="checkbox" ${i.done?'checked':''} data-a="t" data-id="${i.id}"><input type="text" value="${i.text.replace(/"/g,'&quot;')}" class="flex-1 bg-transparent border-b border-stone-300 dark:border-stone-700" data-a="e" data-id="${i.id}"><button class="btn btn-ghost" data-a="d" data-id="${i.id}">ðŸ—‘ï¸</button></li>`).join(""); $('shoppingEmpty').classList.toggle('hidden',shopping.length>0); }
-  function addItem(text){ text=text.trim(); if(!text) return; shopping.push({id:uid(),text,done:false}); save(); renderList(); }
-  function addMany(arr){ (arr||[]).forEach(addItem); openDrawer(); }
-  function openDrawer(){ $('shoppingDrawer').classList.add('open'); }
-  function closeDrawer(){ $('shoppingDrawer').classList.remove('open'); }
-  $('openShopping').onclick=openDrawer; $('closeShopping').onclick=closeDrawer;
-  $('addItem').onclick=()=>{ addItem($('newItem').value); $('newItem').value=""; $('newItem').focus(); };
-  $('newItem').onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); $('addItem').click(); } };
-  $('shoppingList').addEventListener('click',e=>{ const b=e.target.closest('button[data-a="d"]'); if(!b) return; shopping=shopping.filter(x=>x.id!==b.dataset.id); save(); renderList(); });
-  $('shoppingList').addEventListener('change',e=>{ const c=e.target.closest('input[type="checkbox"][data-a="t"]'); if(!c) return; const it=shopping.find(x=>x.id===c.dataset.id); if(it){ it.done=c.checked; save(); } });
-  $('shoppingList').addEventListener('input',e=>{ const t=e.target.closest('input[type="text"][data-a="e"]'); if(!t) return; const it=shopping.find(x=>x.id===t.dataset.id); if(it){ it.text=t.value; save(); } });
-  $('clearChecked').onclick=()=>{ shopping=shopping.filter(i=>!i.done); save(); renderList(); };
-  $('exportList').onclick=()=>{ const data=shopping.map(i=>`${i.done?'[x]':'[ ]'} ${i.text}`).join('\n'); const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([data],{type:'text/plain'})); a.download='lista_compra.txt'; a.click(); };
-  $('printList').onclick=()=>{ const w=window.open('','_blank'); w.document.write(`<pre>${shopping.map(i=>`${i.done?'[x]':'[ ]'} ${i.text}`).join('\n')}</pre>`); w.document.close(); w.print(); setTimeout(()=>w.close(),300); };
+    const $ = (id) => document.getElementById(id);
+    const esc = (v) => String(v).replace(/[&<>"']/g, (m) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
 
-  // Reconocimiento de voz actualizado y robusto
-  const SR = (!isIOS) && (window.SpeechRecognition||window.webkitSpeechRecognition) ? (window.SpeechRecognition||window.webkitSpeechRecognition) : null;
-  if(isIOS || !SR){
-    $('toggleMic').disabled=true;
-    $('toggleMic').classList.add('opacity-60','cursor-not-allowed');
-    $('readerStatus').textContent = isIOS ? "Voz: el micrÃ³fono no estÃ¡ soportado en iPhone/iPad (Safari). Usa los botones." : "Voz: reconocimiento no disponible en este navegador.";
-  }
-  let rec=null,restarting=false;
-  const norm = s => (s||"").toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu,'').replace(/\s+/g,' ').trim();
-  function startMic(){
-    if(!SR) return;
-    if(!rec){
-      rec=new SR(); rec.lang='es-ES'; rec.continuous=true; rec.interimResults=false;
-      rec.onresult=(ev)=>{ const last=ev.results[ev.results.length-1][0].transcript||''; $('heardText').textContent=last; const t=norm(last);
-        const m=t.match(/paso\s+(\d{1,2})/); const num=m?Number(m[1]):null;
-        if(/^salir$|^parar$|^detener$/.test(t)) return closeGuided();
-        if(/^repetir$|^otra vez$|^de nuevo$/.test(t)) return repeatStep();
-        if(/^siguiente$|^continuar$|^proximo$|^adelante$|^avanzar$/.test(t)) return nextStep();
-        if(/^anterior$|^atras$|^retroceder$/.test(t)) return prevStep();
-        if(/^leer ingredientes?$/.test(t)) return readIngredients();
-        if(num) return goToStep(num-1);
-        if(!state.current) $('readerStatus').textContent="Abre â€˜Cocina guiadaâ€™ para usar comandos.";
+    function nowLabel() {
+      $('dateLabel').textContent = new Date().toLocaleString('es-ES', {
+        weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit'
+      });
+      const hour = new Date().getHours();
+      const greet = hour < 12 ? 'Buen día' : hour < 19 ? 'Buena tarde' : 'Buena noche';
+      $('welcomeMessage').textContent = `${greet}, tu centro de IA Automation está listo.`;
+    }
+
+    function taskPriorityClass(level) {
+      if (level === 'Urgente') return 'urgent';
+      if (level === 'Rutina') return 'routine';
+      return 'important';
+    }
+
+    function toDateTime(task) {
+      return new Date(`${task.date}T${task.time || '00:00'}`);
+    }
+
+    function isToday(dateStr) {
+      const d = new Date(dateStr + 'T00:00');
+      const n = new Date();
+      return d.getFullYear() === n.getFullYear() && d.getMonth() === n.getMonth() && d.getDate() === n.getDate();
+    }
+
+    // ---------- NLP parser local ----------
+    function parseNaturalInput(text) {
+      const value = text.toLowerCase();
+      const weekdays = ['domingo','lunes','martes','miércoles','miercoles','jueves','viernes','sábado','sabado'];
+      const timeMatch = value.match(/(\d{1,2})(?::(\d{2}))?/);
+      let parsedTime = null;
+      if (timeMatch) {
+        const hh = Math.min(23, Number(timeMatch[1]));
+        const mm = Math.min(59, Number(timeMatch[2] || 0));
+        parsedTime = `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`;
+      }
+
+      let date = new Date();
+      if (value.includes('mañana')) date.setDate(date.getDate() + 1);
+      if (value.includes('hoy')) date = new Date();
+
+      const found = weekdays.find((d) => value.includes(d));
+      if (found) {
+        const map = { domingo:0, lunes:1, martes:2, miércoles:3, miercoles:3, jueves:4, viernes:5, sábado:6, sabado:6 };
+        const target = map[found];
+        const current = date.getDay();
+        const delta = (target - current + 7) % 7 || 7;
+        date.setDate(date.getDate() + delta);
+      }
+
+      const isoDate = `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+      return { date: isoDate, time: parsedTime };
+    }
+
+    function renderTasks() {
+      const data = [...appState.tasks].sort((a,b)=>toDateTime(a)-toDateTime(b));
+      $('taskList').innerHTML = data.length ? data.map(t => `
+        <li class="item">
+          <div class="row between">
+            <div>
+              <div class="item-title">${esc(t.title)}</div>
+              <div class="meta">
+                <span>${esc(t.category)}</span><span>•</span><span>${esc(t.date)} ${esc(t.time)}</span>
+              </div>
+            </div>
+            <span class="pill ${taskPriorityClass(t.priority)}">${esc(t.priority)}</span>
+          </div>
+          <div class="row">
+            <button class="btn-soft" onclick="removeTask('${t.id}')">Eliminar</button>
+          </div>
+        </li>
+      `).join('') : '<li class="item"><small>Sin eventos aún.</small></li>';
+    }
+
+    function renderToday() {
+      const today = appState.tasks.filter(t => isToday(t.date));
+      const completed = today.filter(t => t.done).length;
+      const total = today.length || 1;
+      const pct = Math.round((completed / total) * 100);
+      $('progressWrap').style.background = `conic-gradient(var(--accent) ${pct*3.6}deg, #1b1f3a 0deg)`;
+      $('progressText').textContent = `${pct}%`;
+      $('todaySummary').textContent = `${today.length} evento(s) para hoy`;
+
+      $('todayList').innerHTML = today.length ? today
+        .sort((a,b)=>toDateTime(a)-toDateTime(b))
+        .map(t => `
+          <li class="item">
+            <div class="row between">
+              <div>
+                <div class="item-title">${esc(t.title)}</div>
+                <div class="meta">${esc(t.time)} · ${esc(t.category)}</div>
+              </div>
+              <label class="row" style="width:auto;">
+                <input type="checkbox" ${t.done ? 'checked' : ''} onchange="toggleTaskDone('${t.id}')" style="width:auto;" />
+                <small>Hecho</small>
+              </label>
+            </div>
+          </li>`).join('') : '<li class="item"><small>¡Todo al día! Momento de buscar nuevos clientes.</small></li>';
+    }
+
+    function groupBy(arr, key) {
+      return arr.reduce((acc, item) => {
+        const k = item[key] || 'Sin categoría';
+        if (!acc[k]) acc[k] = [];
+        acc[k].push(item);
+        return acc;
+      }, {});
+    }
+
+    function setupSwipe(li, id) {
+      let startX = 0;
+      li.addEventListener('touchstart', (e) => { startX = e.changedTouches[0].clientX; }, { passive: true });
+      li.addEventListener('touchend', (e) => {
+        const endX = e.changedTouches[0].clientX;
+        if (endX - startX > 60) toggleShop(id);
+      }, { passive: true });
+      li.addEventListener('mousedown', (e) => { startX = e.clientX; });
+      li.addEventListener('mouseup', (e) => { if (e.clientX - startX > 80) toggleShop(id); });
+    }
+
+    function renderShopping() {
+      const grouped = groupBy(appState.shopping, 'category');
+      const root = $('shopGroups');
+      const keys = Object.keys(grouped);
+      if (!keys.length) {
+        root.innerHTML = '<div class="item"><small>Sin productos.</small></div>';
+        return;
+      }
+      root.innerHTML = keys.map(k => `
+        <section class="card" style="padding:8px;">
+          <div class="row between"><strong>${esc(k)}</strong><small>${grouped[k].length} items</small></div>
+          <ul class="list" id="shop-${esc(k)}" style="margin-top:8px;"></ul>
+        </section>
+      `).join('');
+
+      keys.forEach((k) => {
+        const list = document.getElementById(`shop-${k}`);
+        list.innerHTML = grouped[k].map(i => `
+          <li class="item swipe ${i.done ? 'done' : ''}" data-id="${i.id}">
+            <div class="row between">
+              <span class="${i.done ? 'muted' : ''}">${esc(i.text)}</span>
+              <button class="btn-soft" onclick="removeShop('${i.id}')">Quitar</button>
+            </div>
+          </li>
+        `).join('');
+        [...list.querySelectorAll('.swipe')].forEach((el) => setupSwipe(el, el.dataset.id));
+      });
+    }
+
+    function renderCRM() {
+      $('crmList').innerHTML = appState.crm.length ? appState.crm.map(c => `
+        <li class="item">
+          <div class="row between">
+            <div>
+              <div class="item-title">${esc(c.name)}</div>
+              <div class="meta">${esc(c.service)}</div>
+            </div>
+            <select onchange="changeCrmStatus('${c.id}', this.value)" style="max-width:130px;">
+              <option ${c.status==='Prospecto'?'selected':''}>Prospecto</option>
+              <option ${c.status==='Contactado'?'selected':''}>Contactado</option>
+              <option ${c.status==='Cerrado'?'selected':''}>Cerrado</option>
+            </select>
+          </div>
+        </li>
+      `).join('') : '<li class="item"><small>No hay contactos.</small></li>';
+    }
+
+    function showToast(message = '¡Copiado!') {
+      const toast = $('copyToast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      clearTimeout(showToast._timer);
+      showToast._timer = setTimeout(() => toast.classList.remove('show'), 1200);
+    }
+
+    async function copyToClipboard(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast('¡Copiado!');
+      } catch {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        ta.remove();
+        showToast('¡Copiado!');
+      }
+    }
+
+    function saveResource(resourcePayload) {
+      const payload = {
+        id: resourcePayload.id || crypto.randomUUID(),
+        category: resourcePayload.category,
+        title: resourcePayload.title.trim(),
+        description: resourcePayload.description.trim(),
+        body: resourcePayload.body.trim()
       };
-      rec.onerror=(e)=>{ $('readerStatus').textContent=`Voz: ${e.error||'error'}`; if (state.listening && (e.error==='no-speech' || e.error==='network' || e.error==='aborted')) { try{ rec.stop(); }catch{} setTimeout(()=>{ try{rec.start();}catch{} }, 400); } };
-      rec.onend=()=>{ if(state.listening && !restarting){ restarting=true; setTimeout(()=>{ restarting=false; try{rec.start();}catch{} }, 400); } };
+      if (!payload.title || !payload.description || !payload.body) return false;
+      if (resourcePayload.id) {
+        appState.resources = appState.resources.map((r) => (r.id === payload.id ? payload : r));
+      } else {
+        appState.resources.push(payload);
+      }
+      saveData();
+      renderResources();
+      return true;
     }
-    try{ rec.start(); }catch{} $('readerStatus').textContent="MicrÃ³fono activo.";
-  }
-  function stopMic(){ if(rec){ try{rec.stop();}catch{} } $('readerStatus').textContent="MicrÃ³fono desactivado."; }
-  function updateMic(){ $('toggleMic').textContent=state.listening?"ðŸŽ¤ Micro activo":"ðŸŽ¤ Micro"; }
-  $('toggleMic').onclick=()=>{ if(!SR) return; state.listening=!state.listening; state.listening?startMic():stopMic(); updateMic(); };
 
-  // Registrar Service Worker (Netlify)
-  if("serviceWorker" in navigator){
-    navigator.serviceWorker.register("./sw.js").catch(console.error);
-  }
+    function editResource(id) {
+      const item = appState.resources.find((r) => r.id === id);
+      if (!item) return;
+      $('resourceEditId').value = item.id;
+      $('resourceTitle').value = item.title;
+      $('resourceDesc').value = item.description;
+      $('resourceCategory').value = item.category;
+      $('resourceBody').value = item.body;
+    }
 
-  // Inicial
-  document.addEventListener('DOMContentLoaded',()=>{ filter(); });
+    function deleteResource(id) {
+      appState.resources = appState.resources.filter((r) => r.id !== id);
+      saveData();
+      renderResources();
+    }
+
+    function renderResources() {
+      const root = $('resourcesRoot');
+      const grouped = groupBy(appState.resources, 'category');
+      const categories = ['Prompts de IA', 'Scripts de Venta'];
+      const hasAny = appState.resources.length > 0;
+      if (!hasAny) {
+        root.innerHTML = '<div class=\"item\"><small>No hay recursos todavía.</small></div>';
+        return;
+      }
+      root.innerHTML = categories.map((cat) => {
+        const items = grouped[cat] || [];
+        return `
+          <section class=\"card\" style=\"padding:8px;\">
+            <div class=\"row between\"><strong>${esc(cat)}</strong><small>${items.length} recurso(s)</small></div>
+            <div class=\"section\" style=\"margin-top:8px;\">
+              ${items.map((r) => `
+                <article class=\"resource-card\">
+                  <div class=\"row between\">
+                    <div>
+                      <div class=\"item-title\">${esc(r.title)}</div>
+                      <small>${esc(r.description)}</small>
+                    </div>
+                    <button class=\"copy-btn\" onclick=\"copyToClipboard(decodeURIComponent('${encodeURIComponent(r.body)}'))\">📋 Copiar</button>
+                  </div>
+                  <div class=\"resource-body\">${esc(r.body)}</div>
+                  <div class=\"row\">
+                    <button class=\"btn-soft\" onclick=\"editResource('${r.id}')\">Editar</button>
+                    <button class=\"btn-soft\" onclick=\"deleteResource('${r.id}')\">Borrar</button>
+                  </div>
+                </article>
+              `).join('') || '<small class=\"muted\">Sin recursos en esta categoría.</small>'}
+            </div>
+          </section>
+        `;
+      }).join('');
+    }
+
+    function renderAll() {
+      nowLabel();
+      renderTasks();
+      renderToday();
+      renderShopping();
+      renderCRM();
+      renderResources();
+      renderROI();
+      $('quickNotes').value = appState.quickNotes;
+    }
+
+    function renderROI() {
+      $('roiCostoImplementacion').value = appState.roi.costoImplementacion ?? '';
+      $('roiHorasAhorradas').value = appState.roi.horasAhorradas ?? '';
+      $('roiValorHora').value = appState.roi.valorHora ?? '';
+      $('roiLeadsRecuperados').value = appState.roi.leadsRecuperados ?? '';
+      $('roiValorVenta').value = appState.roi.valorVenta ?? '';
+      const retorno = Number(appState.roi.retornoAnual || 0);
+      $('roiAnnualValue').textContent = retorno.toLocaleString('es-ES', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 });
+      $('roiResultText').textContent = `Este sistema le ahorra ${retorno.toLocaleString('es-ES', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 })} al año`;
+      $('roiBreakdown').textContent = appState.roi.ahorroMensual
+        ? `Ahorro mensual estimado: ${Number(appState.roi.ahorroMensual).toLocaleString('es-ES', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 })}`
+        : '';
+      $('roi-result-container').classList.toggle('show', retorno !== 0 || !!appState.roi.ahorroMensual);
+    }
+
+    function calculateROI() {
+      const costoImplementacion = Number($('roiCostoImplementacion').value || 0);
+      const horasAhorradas = Number($('roiHorasAhorradas').value || 0);
+      const valorHora = Number($('roiValorHora').value || 0);
+      const leadsRecuperados = Number($('roiLeadsRecuperados').value || 0);
+      const valorVenta = Number($('roiValorVenta').value || 0);
+
+      const ahorroTiempo = horasAhorradas * valorHora;
+      const ingresoRecuperado = leadsRecuperados * valorVenta * 0.10;
+      const ahorroMensual = ahorroTiempo + ingresoRecuperado;
+      const retornoAnual = (ahorroMensual * 12) - costoImplementacion;
+
+      appState.roi = {
+        costoImplementacion,
+        horasAhorradas,
+        valorHora,
+        leadsRecuperados,
+        valorVenta,
+        ahorroMensual,
+        retornoAnual
+      };
+      saveData();
+      renderROI();
+      showToast('ROI actualizado');
+      return appState.roi;
+    }
+
+    function toggleROIPresentation(force) {
+      const shouldEnable = typeof force === 'boolean' ? force : !document.body.classList.contains('roi-presentation');
+      document.body.classList.toggle('roi-presentation', shouldEnable);
+      $('roiExitPresentation').classList.toggle('hidden', !shouldEnable);
+      $('roiPresentationBtn').classList.toggle('hidden', shouldEnable);
+    }
+
+    // ---------- Notificaciones locales ----------
+    async function ensureNotificationPermission() {
+      if (!('Notification' in window)) return false;
+      if (Notification.permission === 'granted') return true;
+      if (Notification.permission === 'denied') return false;
+      const res = await Notification.requestPermission();
+      appState.notifications.granted = res === 'granted';
+      saveData();
+      return res === 'granted';
+    }
+
+    function scheduleNotifications() {
+      if (!('Notification' in window) || Notification.permission !== 'granted') return;
+      const now = Date.now();
+      appState.tasks.forEach((task) => {
+        const eventMs = toDateTime(task).getTime();
+        const notifyMs = eventMs - (15 * 60 * 1000);
+        const delay = notifyMs - now;
+        if (delay > 0 && delay < 24 * 60 * 60 * 1000) {
+          setTimeout(() => {
+            new Notification('Recordatorio médico / cita', {
+              body: `${task.title} a las ${task.time}`,
+              tag: `task-${task.id}`
+            });
+          }, delay);
+        }
+      });
+    }
+
+    // ---------- Seguridad PIN ----------
+    function checkLockOnStart() {
+      if (appState.settings.pin) $('lockScreen').classList.remove('hidden');
+    }
+
+    function lockNow() { $('lockScreen').classList.remove('hidden'); }
+
+    // ---------- Backup local ----------
+    function exportJSON() {
+      const blob = new Blob([JSON.stringify(appState, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `lifeos-backup-${new Date().toISOString().slice(0,10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function importJSON(file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const parsed = JSON.parse(reader.result);
+          appState = { ...structuredClone(defaultState), ...parsed, settings: { ...defaultState.settings, ...(parsed.settings || {}) } };
+          saveData();
+          renderAll();
+          alert('Backup importado correctamente.');
+        } catch {
+          alert('JSON inválido.');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // ---------- PWA (manifest + SW inline) ----------
+    function setupInlinePWA() {
+      const manifest = {
+        name: 'LifeOS Local-First',
+        short_name: 'LifeOS',
+        start_url: '.',
+        display: 'standalone',
+        background_color: '#000000',
+        theme_color: '#000000',
+        icons: [{ src: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect width="192" height="192" fill="black"/><text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" fill="white" font-size="72">L</text></svg>', sizes: '192x192', type: 'image/svg+xml' }]
+      };
+      const manBlob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
+      const manURL = URL.createObjectURL(manBlob);
+      const link = document.createElement('link');
+      link.rel = 'manifest';
+      link.href = manURL;
+      document.head.appendChild(link);
+
+      if ('serviceWorker' in navigator) {
+        const swCode = `
+          const CACHE = 'lifeos-cache-v1';
+          self.addEventListener('install', e => {
+            e.waitUntil(caches.open(CACHE).then(c => c.addAll(['./'])));
+          });
+          self.addEventListener('fetch', e => {
+            e.respondWith(caches.match(e.request).then(r => r || fetch(e.request).catch(() => caches.match('./'))));
+          });
+        `;
+        const swBlob = new Blob([swCode], { type: 'text/javascript' });
+        const swUrl = URL.createObjectURL(swBlob);
+        navigator.serviceWorker.register(swUrl).catch(() => {});
+      }
+    }
+
+    // ---------- CRUD ----------
+    function removeTask(id) { appState.tasks = appState.tasks.filter(t => t.id !== id); saveData(); renderAll(); }
+    function toggleTaskDone(id) { appState.tasks = appState.tasks.map(t => t.id===id ? { ...t, done: !t.done } : t); saveData(); renderAll(); }
+    function toggleShop(id) { appState.shopping = appState.shopping.map(i => i.id===id ? { ...i, done: !i.done } : i); saveData(); renderShopping(); }
+    function removeShop(id) { appState.shopping = appState.shopping.filter(i => i.id !== id); saveData(); renderShopping(); }
+    function changeCrmStatus(id, status) { appState.crm = appState.crm.map(c => c.id===id ? { ...c, status } : c); saveData(); renderCRM(); }
+
+    window.removeTask = removeTask;
+    window.toggleTaskDone = toggleTaskDone;
+    window.toggleShop = toggleShop;
+    window.removeShop = removeShop;
+    window.changeCrmStatus = changeCrmStatus;
+    window.copyToClipboard = copyToClipboard;
+    window.editResource = editResource;
+    window.deleteResource = deleteResource;
+    window.calculateROI = calculateROI;
+    window.toggleROIPresentation = toggleROIPresentation;
+    Object.defineProperty(window, 'appState', {
+      get: () => appState,
+      set: (value) => { appState = value; }
+    });
+
+    // ---------- Eventos UI ----------
+    $('tabbar').addEventListener('click', (e) => {
+      const btn = e.target.closest('.tab');
+      if (!btn) return;
+      if (document.body.classList.contains('roi-presentation')) toggleROIPresentation(false);
+      const key = btn.dataset.tab;
+      [...document.querySelectorAll('.tab')].forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+      [...document.querySelectorAll('.tab-panel')].forEach(p => p.classList.add('hidden'));
+      $(`tab-${key}`).classList.remove('hidden');
+    });
+
+    $('taskInput').addEventListener('input', (e) => {
+      const { date, time } = parseNaturalInput(e.target.value);
+      if (date) $('taskDate').value = date;
+      if (time) $('taskTime').value = time;
+    });
+
+    $('taskForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const task = {
+        id: crypto.randomUUID(),
+        title: $('taskInput').value.trim(),
+        date: $('taskDate').value,
+        time: $('taskTime').value,
+        priority: $('taskPriority').value,
+        category: $('taskCategory').value,
+        done: false
+      };
+      if (!task.title || !task.date || !task.time) return;
+      appState.tasks.push(task);
+      saveData();
+      renderAll();
+      $('taskForm').reset();
+      await ensureNotificationPermission();
+      scheduleNotifications();
+    });
+
+    $('shopForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const text = $('shopInput').value.trim();
+      if (!text) return;
+      appState.shopping.push({ id: crypto.randomUUID(), text, category: $('shopCategory').value, done: false });
+      saveData();
+      renderShopping();
+      $('shopForm').reset();
+    });
+
+    $('crmForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      appState.crm.push({ id: crypto.randomUUID(), name: $('crmName').value.trim(), service: $('crmService').value.trim(), status: $('crmStatus').value });
+      saveData();
+      renderCRM();
+      $('crmForm').reset();
+    });
+
+    $('quickNotes').addEventListener('input', (e) => { appState.quickNotes = e.target.value; saveData(); });
+    $('saveLongNote').addEventListener('click', async () => {
+      try {
+        await saveLongNote($('longNote').value);
+        alert('Nota larga guardada en IndexedDB.');
+      } catch {
+        alert('No se pudo guardar en IndexedDB.');
+      }
+    });
+
+    $('savePin').addEventListener('click', () => {
+      appState.settings.pin = $('pinInput').value.trim();
+      saveData();
+      $('pinInput').value = '';
+      alert(appState.settings.pin ? 'PIN guardado.' : 'PIN eliminado.');
+    });
+    $('lockNow').addEventListener('click', lockNow);
+
+    $('unlockBtn').addEventListener('click', () => {
+      const ok = $('unlockPin').value === appState.settings.pin;
+      $('unlockMsg').textContent = ok ? 'Desbloqueado.' : 'PIN incorrecto.';
+      if (ok) {
+        $('unlockPin').value = '';
+        $('lockScreen').classList.add('hidden');
+      }
+    });
+
+    $('exportBtn').addEventListener('click', exportJSON);
+    $('importBtn').addEventListener('click', () => $('importFile').click());
+    $('importFile').addEventListener('change', (e) => {
+      const file = e.target.files?.[0];
+      if (file) importJSON(file);
+      e.target.value = '';
+    });
+
+    $('resourceForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const ok = saveResource({
+        id: $('resourceEditId').value || undefined,
+        category: $('resourceCategory').value,
+        title: $('resourceTitle').value,
+        description: $('resourceDesc').value,
+        body: $('resourceBody').value
+      });
+      if (!ok) return;
+      $('resourceForm').reset();
+      $('resourceEditId').value = '';
+      showToast('Recurso guardado');
+    });
+
+    $('roiForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      calculateROI();
+    });
+    $('roiPresentationBtn').addEventListener('click', () => toggleROIPresentation(true));
+    $('roiExitPresentation').addEventListener('click', () => toggleROIPresentation(false));
+
+    // ---------- Boot ----------
+    (async function init() {
+      loadData();
+      renderAll();
+      checkLockOnStart();
+      setupInlinePWA();
+      scheduleNotifications();
+      try { $('longNote').value = await loadLongNote(); } catch {}
+      setInterval(nowLabel, 30000);
+    })();
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
 
 
 
